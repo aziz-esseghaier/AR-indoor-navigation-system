@@ -1,0 +1,1172 @@
+{
+  "adjacencyList": {
+    "cube_0": [
+      {
+        "node": "cube_61",
+        "distance": 1.4265495369733432
+      },
+      {
+        "node": "cube_64",
+        "distance": 2.5782979189781936
+      },
+      {
+        "node": "cube_1",
+        "distance": 0.6359452689705624
+      }
+    ],
+    "cube_61": [
+      {
+        "node": "cube_0",
+        "distance": 1.4265495369733432
+      },
+      {
+        "node": "cube_64",
+        "distance": 2.577524126894581
+      },
+      {
+        "node": "cube_60",
+        "distance": 1.330747088808535
+      }
+    ],
+    "cube_64": [
+      {
+        "node": "cube_61",
+        "distance": 2.577524126894581
+      },
+      {
+        "node": "cube_0",
+        "distance": 2.5782979189781936
+      },
+      {
+        "node": "cube_65",
+        "distance": 1.2093454301437092
+      }
+    ],
+    "cube_1": [
+      {
+        "node": "cube_0",
+        "distance": 0.6359452689705624
+      },
+      {
+        "node": "cube_2",
+        "distance": 0.9544579863867771
+      }
+    ],
+    "cube_2": [
+      {
+        "node": "cube_1",
+        "distance": 0.9544579863867771
+      },
+      {
+        "node": "cube_3",
+        "distance": 0.9503963226641048
+      }
+    ],
+    "cube_3": [
+      {
+        "node": "cube_2",
+        "distance": 0.9503963226641048
+      },
+      {
+        "node": "cube_4",
+        "distance": 1.0723473715148324
+      }
+    ],
+    "cube_4": [
+      {
+        "node": "cube_3",
+        "distance": 1.0723473715148324
+      },
+      {
+        "node": "cube_5",
+        "distance": 1.043906402454126
+      }
+    ],
+    "cube_5": [
+      {
+        "node": "cube_4",
+        "distance": 1.043906402454126
+      },
+      {
+        "node": "cube_6",
+        "distance": 1.0679707945662356
+      }
+    ],
+    "cube_6": [
+      {
+        "node": "cube_5",
+        "distance": 1.0679707945662356
+      },
+      {
+        "node": "cube_7",
+        "distance": 1.187390547947947
+      }
+    ],
+    "cube_7": [
+      {
+        "node": "cube_6",
+        "distance": 1.187390547947947
+      },
+      {
+        "node": "cube_8",
+        "distance": 1.1244888787094858
+      }
+    ],
+    "cube_8": [
+      {
+        "node": "cube_7",
+        "distance": 1.1244888787094858
+      },
+      {
+        "node": "cube_9",
+        "distance": 1.0225153470381774
+      }
+    ],
+    "cube_9": [
+      {
+        "node": "cube_8",
+        "distance": 1.0225153470381774
+      },
+      {
+        "node": "cube_10",
+        "distance": 1.0530434536604174
+      }
+    ],
+    "cube_10": [
+      {
+        "node": "cube_9",
+        "distance": 1.0530434536604174
+      },
+      {
+        "node": "cube_11",
+        "distance": 1.071960012479953
+      }
+    ],
+    "cube_11": [
+      {
+        "node": "cube_10",
+        "distance": 1.071960012479953
+      },
+      {
+        "node": "cube_12",
+        "distance": 0.9615395065978961
+      }
+    ],
+    "cube_12": [
+      {
+        "node": "cube_11",
+        "distance": 0.9615395065978961
+      },
+      {
+        "node": "cube_13",
+        "distance": 1.2293564565218753
+      }
+    ],
+    "cube_13": [
+      {
+        "node": "cube_12",
+        "distance": 1.2293564565218753
+      },
+      {
+        "node": "cube_14",
+        "distance": 0.9546008685194279
+      }
+    ],
+    "cube_14": [
+      {
+        "node": "cube_13",
+        "distance": 0.9546008685194279
+      },
+      {
+        "node": "cube_15",
+        "distance": 1.0401136274782719
+      }
+    ],
+    "cube_15": [
+      {
+        "node": "cube_14",
+        "distance": 1.0401136274782719
+      },
+      {
+        "node": "cube_16",
+        "distance": 0.8829722150903715
+      }
+    ],
+    "cube_16": [
+      {
+        "node": "cube_15",
+        "distance": 0.8829722150903715
+      },
+      {
+        "node": "cube_17",
+        "distance": 1.0836274150102416
+      }
+    ],
+    "cube_17": [
+      {
+        "node": "cube_16",
+        "distance": 1.0836274150102416
+      },
+      {
+        "node": "cube_18",
+        "distance": 0.9433709729574505
+      }
+    ],
+    "cube_18": [
+      {
+        "node": "cube_17",
+        "distance": 0.9433709729574505
+      },
+      {
+        "node": "cube_19",
+        "distance": 0.9467982924811353
+      }
+    ],
+    "cube_19": [
+      {
+        "node": "cube_18",
+        "distance": 0.9467982924811353
+      },
+      {
+        "node": "cube_20",
+        "distance": 1.1653259809287846
+      }
+    ],
+    "cube_20": [
+      {
+        "node": "cube_19",
+        "distance": 1.1653259809287846
+      },
+      {
+        "node": "cube_21",
+        "distance": 1.2304940957618364
+      }
+    ],
+    "cube_21": [
+      {
+        "node": "cube_20",
+        "distance": 1.2304940957618364
+      },
+      {
+        "node": "cube_22",
+        "distance": 0.8654732273921805
+      }
+    ],
+    "cube_22": [
+      {
+        "node": "cube_21",
+        "distance": 0.8654732273921805
+      },
+      {
+        "node": "cube_23",
+        "distance": 1.286154606077024
+      }
+    ],
+    "cube_23": [
+      {
+        "node": "cube_22",
+        "distance": 1.286154606077024
+      },
+      {
+        "node": "cube_24",
+        "distance": 1.2257493892334281
+      }
+    ],
+    "cube_26": [
+      {
+        "node": "cube_25",
+        "distance": 1.1479289348208566
+      },
+      {
+        "node": "cube_27",
+        "distance": 1.1526945270408782
+      }
+    ],
+    "cube_25": [
+      {
+        "node": "cube_26",
+        "distance": 1.1479289348208566
+      },
+      {
+        "node": "cube_24",
+        "distance": 1.1126757956345938
+      }
+    ],
+    "cube_24": [
+      {
+        "node": "cube_25",
+        "distance": 1.1126757956345938
+      },
+      {
+        "node": "cube_23",
+        "distance": 1.2257493892334281
+      }
+    ],
+    "cube_27": [
+      {
+        "node": "cube_26",
+        "distance": 1.1526945270408782
+      },
+      {
+        "node": "cube_28",
+        "distance": 1.050679851678251
+      }
+    ],
+    "cube_28": [
+      {
+        "node": "cube_27",
+        "distance": 1.050679851678251
+      },
+      {
+        "node": "cube_29",
+        "distance": 1.0431359094656911
+      }
+    ],
+    "cube_29": [
+      {
+        "node": "cube_28",
+        "distance": 1.0431359094656911
+      },
+      {
+        "node": "cube_30",
+        "distance": 1.0681753848516415
+      }
+    ],
+    "cube_30": [
+      {
+        "node": "cube_29",
+        "distance": 1.0681753848516415
+      },
+      {
+        "node": "cube_31",
+        "distance": 1.1016571591192081
+      }
+    ],
+    "cube_31": [
+      {
+        "node": "cube_30",
+        "distance": 1.1016571591192081
+      },
+      {
+        "node": "cube_32",
+        "distance": 1.099238087781011
+      }
+    ],
+    "cube_32": [
+      {
+        "node": "cube_31",
+        "distance": 1.099238087781011
+      },
+      {
+        "node": "cube_33",
+        "distance": 1.0111735463449925
+      }
+    ],
+    "cube_33": [
+      {
+        "node": "cube_32",
+        "distance": 1.0111735463449925
+      },
+      {
+        "node": "cube_34",
+        "distance": 1.0577764874124602
+      }
+    ],
+    "cube_34": [
+      {
+        "node": "cube_33",
+        "distance": 1.0577764874124602
+      },
+      {
+        "node": "cube_35",
+        "distance": 1.13308767566
+      }
+    ],
+    "cube_35": [
+      {
+        "node": "cube_34",
+        "distance": 1.13308767566
+      },
+      {
+        "node": "cube_36",
+        "distance": 1.064300514979293
+      }
+    ],
+    "cube_36": [
+      {
+        "node": "cube_35",
+        "distance": 1.064300514979293
+      },
+      {
+        "node": "cube_37",
+        "distance": 1.099204718004333
+      }
+    ],
+    "cube_37": [
+      {
+        "node": "cube_36",
+        "distance": 1.099204718004333
+      },
+      {
+        "node": "cube_38",
+        "distance": 1.08504574474619
+      }
+    ],
+    "cube_38": [
+      {
+        "node": "cube_37",
+        "distance": 1.08504574474619
+      },
+      {
+        "node": "cube_39",
+        "distance": 1.1691797023193062
+      }
+    ],
+    "cube_39": [
+      {
+        "node": "cube_38",
+        "distance": 1.1691797023193062
+      },
+      {
+        "node": "cube_40",
+        "distance": 1.1927219468103383
+      }
+    ],
+    "cube_40": [
+      {
+        "node": "cube_39",
+        "distance": 1.1927219468103383
+      },
+      {
+        "node": "cube_41",
+        "distance": 1.1893011534208493
+      }
+    ],
+    "cube_41": [
+      {
+        "node": "cube_40",
+        "distance": 1.1893011534208493
+      },
+      {
+        "node": "cube_42",
+        "distance": 1.0421851767316825
+      }
+    ],
+    "cube_42": [
+      {
+        "node": "cube_41",
+        "distance": 1.0421851767316825
+      },
+      {
+        "node": "cube_43",
+        "distance": 1.2120345471901792
+      }
+    ],
+    "cube_43": [
+      {
+        "node": "cube_42",
+        "distance": 1.2120345471901792
+      },
+      {
+        "node": "cube_44",
+        "distance": 1.3521648947741511
+      }
+    ],
+    "cube_44": [
+      {
+        "node": "cube_43",
+        "distance": 1.3521648947741511
+      },
+      {
+        "node": "cube_45",
+        "distance": 1.1404653545360812
+      }
+    ],
+    "cube_45": [
+      {
+        "node": "cube_44",
+        "distance": 1.1404653545360812
+      },
+      {
+        "node": "cube_46",
+        "distance": 1.131277751970834
+      }
+    ],
+    "cube_46": [
+      {
+        "node": "cube_45",
+        "distance": 1.131277751970834
+      },
+      {
+        "node": "cube_47",
+        "distance": 1.1373859199382705
+      }
+    ],
+    "cube_47": [
+      {
+        "node": "cube_46",
+        "distance": 1.1373859199382705
+      },
+      {
+        "node": "cube_48",
+        "distance": 1.182422732598307
+      }
+    ],
+    "cube_48": [
+      {
+        "node": "cube_47",
+        "distance": 1.182422732598307
+      },
+      {
+        "node": "cube_49",
+        "distance": 1.306324132822302
+      }
+    ],
+    "cube_49": [
+      {
+        "node": "cube_48",
+        "distance": 1.306324132822302
+      },
+      {
+        "node": "cube_50",
+        "distance": 1.21075540219031
+      }
+    ],
+    "cube_50": [
+      {
+        "node": "cube_49",
+        "distance": 1.21075540219031
+      },
+      {
+        "node": "cube_51",
+        "distance": 1.269769069828427
+      }
+    ],
+    "cube_51": [
+      {
+        "node": "cube_50",
+        "distance": 1.269769069828427
+      },
+      {
+        "node": "cube_52",
+        "distance": 1.2502131320410552
+      }
+    ],
+    "cube_52": [
+      {
+        "node": "cube_51",
+        "distance": 1.2502131320410552
+      },
+      {
+        "node": "cube_53",
+        "distance": 1.3322565017924934
+      }
+    ],
+    "cube_53": [
+      {
+        "node": "cube_52",
+        "distance": 1.3322565017924934
+      },
+      {
+        "node": "cube_54",
+        "distance": 1.2085273643115666
+      }
+    ],
+    "cube_54": [
+      {
+        "node": "cube_53",
+        "distance": 1.2085273643115666
+      },
+      {
+        "node": "cube_55",
+        "distance": 1.0234415485919726
+      }
+    ],
+    "cube_55": [
+      {
+        "node": "cube_54",
+        "distance": 1.0234415485919726
+      },
+      {
+        "node": "cube_56",
+        "distance": 1.1783226467556243
+      }
+    ],
+    "cube_56": [
+      {
+        "node": "cube_55",
+        "distance": 1.1783226467556243
+      },
+      {
+        "node": "cube_57",
+        "distance": 1.041484774488428
+      }
+    ],
+    "cube_57": [
+      {
+        "node": "cube_56",
+        "distance": 1.041484774488428
+      },
+      {
+        "node": "cube_58",
+        "distance": 1.1042933620238935
+      }
+    ],
+    "cube_58": [
+      {
+        "node": "cube_57",
+        "distance": 1.1042933620238935
+      },
+      {
+        "node": "cube_59",
+        "distance": 1.0228386521731372
+      }
+    ],
+    "cube_59": [
+      {
+        "node": "cube_58",
+        "distance": 1.0228386521731372
+      },
+      {
+        "node": "cube_60",
+        "distance": 1.2632292461508683
+      }
+    ],
+    "cube_60": [
+      {
+        "node": "cube_59",
+        "distance": 1.2632292461508683
+      },
+      {
+        "node": "cube_61",
+        "distance": 1.330747088808535
+      }
+    ],
+    "cube_65": [
+      {
+        "node": "cube_64",
+        "distance": 1.2093454301437092
+      },
+      {
+        "node": "cube_66",
+        "distance": 1.0497401694650346
+      }
+    ],
+    "cube_66": [
+      {
+        "node": "cube_65",
+        "distance": 1.0497401694650346
+      },
+      {
+        "node": "cube_67",
+        "distance": 1.6061080436477142
+      }
+    ],
+    "cube_67": [
+      {
+        "node": "cube_66",
+        "distance": 1.6061080436477142
+      },
+      {
+        "node": "cube_68",
+        "distance": 1.0470500301809398
+      }
+    ],
+    "cube_68": [
+      {
+        "node": "cube_67",
+        "distance": 1.0470500301809398
+      },
+      {
+        "node": "cube_69",
+        "distance": 0.959933354000169
+      }
+    ],
+    "cube_69": [
+      {
+        "node": "cube_68",
+        "distance": 0.959933354000169
+      },
+      {
+        "node": "cube_70",
+        "distance": 1.126377729128343
+      }
+    ],
+    "cube_70": [
+      {
+        "node": "cube_69",
+        "distance": 1.126377729128343
+      },
+      {
+        "node": "cube_71",
+        "distance": 1.5450095602410268
+      }
+    ],
+    "cube_71": [
+      {
+        "node": "cube_70",
+        "distance": 1.5450095602410268
+      },
+      {
+        "node": "cube_72",
+        "distance": 1.1658672291108114
+      }
+    ],
+    "cube_72": [
+      {
+        "node": "cube_71",
+        "distance": 1.1658672291108114
+      },
+      {
+        "node": "cube_73",
+        "distance": 1.1150802347347482
+      }
+    ],
+    "cube_73": [
+      {
+        "node": "cube_72",
+        "distance": 1.1150802347347482
+      },
+      {
+        "node": "cube_74",
+        "distance": 1.05455455998744
+      }
+    ],
+    "cube_74": [
+      {
+        "node": "cube_73",
+        "distance": 1.05455455998744
+      },
+      {
+        "node": "cube_75",
+        "distance": 1.615571241622429
+      }
+    ],
+    "cube_75": [
+      {
+        "node": "cube_74",
+        "distance": 1.615571241622429
+      },
+      {
+        "node": "cube_76",
+        "distance": 1.1500062660876977
+      }
+    ],
+    "cube_76": [
+      {
+        "node": "cube_75",
+        "distance": 1.1500062660876977
+      },
+      {
+        "node": "cube_77",
+        "distance": 1.0131214989580346
+      }
+    ],
+    "cube_77": [
+      {
+        "node": "cube_76",
+        "distance": 1.0131214989580346
+      },
+      {
+        "node": "cube_78",
+        "distance": 1.5543428911002939
+      }
+    ],
+    "cube_78": [
+      {
+        "node": "cube_77",
+        "distance": 1.5543428911002939
+      },
+      {
+        "node": "cube_79",
+        "distance": 1.1419240500379235
+      }
+    ],
+    "cube_79": [
+      {
+        "node": "cube_78",
+        "distance": 1.1419240500379235
+      },
+      {
+        "node": "cube_80",
+        "distance": 1.1501952855671138
+      }
+    ],
+    "cube_80": [
+      {
+        "node": "cube_79",
+        "distance": 1.1501952855671138
+      },
+      {
+        "node": "cube_81",
+        "distance": 1.62809200773747
+      }
+    ],
+    "cube_81": [
+      {
+        "node": "cube_80",
+        "distance": 1.62809200773747
+      },
+      {
+        "node": "cube_82",
+        "distance": 1.1666389361856062
+      }
+    ],
+    "cube_82": [
+      {
+        "node": "cube_81",
+        "distance": 1.1666389361856062
+      },
+      {
+        "node": "cube_83",
+        "distance": 1.3208387005842395
+      }
+    ],
+    "cube_83": [
+      {
+        "node": "cube_82",
+        "distance": 1.3208387005842395
+      },
+      {
+        "node": "cube_84",
+        "distance": 0.8288833262196565
+      }
+    ],
+    "cube_84": [
+      {
+        "node": "cube_83",
+        "distance": 0.8288833262196565
+      },
+      {
+        "node": "cube_85",
+        "distance": 0.9518922967769643
+      }
+    ],
+    "cube_85": [
+      {
+        "node": "cube_84",
+        "distance": 0.9518922967769643
+      },
+      {
+        "node": "cube_86",
+        "distance": 1.0418708068311229
+      }
+    ],
+    "cube_86": [
+      {
+        "node": "cube_85",
+        "distance": 1.0418708068311229
+      },
+      {
+        "node": "cube_87",
+        "distance": 1.3293100612118731
+      }
+    ],
+    "cube_87": [
+      {
+        "node": "cube_86",
+        "distance": 1.3293100612118731
+      },
+      {
+        "node": "cube_88",
+        "distance": 0.9128555927309718
+      }
+    ],
+    "cube_88": [
+      {
+        "node": "cube_87",
+        "distance": 0.9128555927309718
+      },
+      {
+        "node": "cube_89",
+        "distance": 1.0270745501537484
+      }
+    ],
+    "cube_89": [
+      {
+        "node": "cube_88",
+        "distance": 1.0270745501537484
+      },
+      {
+        "node": "cube_90",
+        "distance": 0.7364511814447904
+      }
+    ],
+    "cube_90": [
+      {
+        "node": "cube_89",
+        "distance": 0.7364511814447904
+      },
+      {
+        "node": "cube_91",
+        "distance": 0.8386511167591557
+      }
+    ],
+    "cube_91": [
+      {
+        "node": "cube_90",
+        "distance": 0.8386511167591557
+      },
+      {
+        "node": "cube_92",
+        "distance": 1.3885264607873296
+      }
+    ],
+    "cube_92": [
+      {
+        "node": "cube_91",
+        "distance": 1.3885264607873296
+      },
+      {
+        "node": "cube_93",
+        "distance": 0.7135984389872264
+      }
+    ],
+    "cube_93": [
+      {
+        "node": "cube_92",
+        "distance": 0.7135984389872264
+      },
+      {
+        "node": "cube_94",
+        "distance": 0.9083320143587676
+      }
+    ],
+    "cube_94": [
+      {
+        "node": "cube_93",
+        "distance": 0.9083320143587676
+      },
+      {
+        "node": "cube_95",
+        "distance": 0.8971882564427491
+      }
+    ],
+    "cube_95": [
+      {
+        "node": "cube_94",
+        "distance": 0.8971882564427491
+      },
+      {
+        "node": "cube_96",
+        "distance": 1.208438073525881
+      }
+    ],
+    "cube_96": [
+      {
+        "node": "cube_95",
+        "distance": 1.208438073525881
+      },
+      {
+        "node": "cube_97",
+        "distance": 1.1035626555946458
+      }
+    ],
+    "cube_97": [
+      {
+        "node": "cube_96",
+        "distance": 1.1035626555946458
+      },
+      {
+        "node": "cube_98",
+        "distance": 1.1185790472101251
+      }
+    ],
+    "cube_98": [
+      {
+        "node": "cube_97",
+        "distance": 1.1185790472101251
+      },
+      {
+        "node": "cube_99",
+        "distance": 0.9279863621063624
+      }
+    ],
+    "cube_99": [
+      {
+        "node": "cube_98",
+        "distance": 0.9279863621063624
+      },
+      {
+        "node": "cube_100",
+        "distance": 1.0913676801130856
+      }
+    ],
+    "cube_100": [
+      {
+        "node": "cube_99",
+        "distance": 1.0913676801130856
+      },
+      {
+        "node": "cube_101",
+        "distance": 1.1246858632324157
+      }
+    ],
+    "cube_101": [
+      {
+        "node": "cube_100",
+        "distance": 1.1246858632324157
+      },
+      {
+        "node": "cube_102",
+        "distance": 0.8578765489793355
+      }
+    ],
+    "cube_102": [
+      {
+        "node": "cube_101",
+        "distance": 0.8578765489793355
+      },
+      {
+        "node": "cube_103",
+        "distance": 0.9825484164445961
+      }
+    ],
+    "cube_103": [
+      {
+        "node": "cube_102",
+        "distance": 0.9825484164445961
+      },
+      {
+        "node": "cube_104",
+        "distance": 0.9654032775483742
+      }
+    ],
+    "cube_104": [
+      {
+        "node": "cube_103",
+        "distance": 0.9654032775483742
+      },
+      {
+        "node": "cube_105",
+        "distance": 0.9074273302923637
+      }
+    ],
+    "cube_105": [
+      {
+        "node": "cube_104",
+        "distance": 0.9074273302923637
+      },
+      {
+        "node": "cube_106",
+        "distance": 0.9994320737799313
+      }
+    ],
+    "cube_106": [
+      {
+        "node": "cube_105",
+        "distance": 0.9994320737799313
+      },
+      {
+        "node": "cube_107",
+        "distance": 0.9019688610217952
+      }
+    ],
+    "cube_107": [
+      {
+        "node": "cube_106",
+        "distance": 0.9019688610217952
+      },
+      {
+        "node": "cube_108",
+        "distance": 0.9250686162459358
+      }
+    ],
+    "cube_108": [
+      {
+        "node": "cube_107",
+        "distance": 0.9250686162459358
+      },
+      {
+        "node": "cube_109",
+        "distance": 1.1055746981058352
+      }
+    ],
+    "cube_109": [
+      {
+        "node": "cube_108",
+        "distance": 1.1055746981058352
+      },
+      {
+        "node": "cube_110",
+        "distance": 0.896900860011953
+      }
+    ],
+    "cube_110": [
+      {
+        "node": "cube_109",
+        "distance": 0.896900860011953
+      },
+      {
+        "node": "cube_111",
+        "distance": 1.118934845501362
+      }
+    ],
+    "cube_111": [
+      {
+        "node": "cube_110",
+        "distance": 1.118934845501362
+      },
+      {
+        "node": "cube_112",
+        "distance": 0.9530627007451015
+      }
+    ],
+    "cube_112": [
+      {
+        "node": "cube_111",
+        "distance": 0.9530627007451015
+      },
+      {
+        "node": "cube_113",
+        "distance": 1.1458219224384678
+      }
+    ],
+    "cube_113": [
+      {
+        "node": "cube_112",
+        "distance": 1.1458219224384678
+      },
+      {
+        "node": "cube_114",
+        "distance": 1.1045183171907664
+      }
+    ],
+    "cube_114": [
+      {
+        "node": "cube_113",
+        "distance": 1.1045183171907664
+      },
+      {
+        "node": "cube_115",
+        "distance": 1.0920223380777319
+      }
+    ],
+    "cube_115": [
+      {
+        "node": "cube_114",
+        "distance": 1.0920223380777319
+      },
+      {
+        "node": "cube_116",
+        "distance": 0.913841094140941
+      }
+    ],
+    "cube_116": [
+      {
+        "node": "cube_115",
+        "distance": 0.913841094140941
+      },
+      {
+        "node": "cube_117",
+        "distance": 1.084002607488921
+      }
+    ],
+    "cube_117": [
+      {
+        "node": "cube_116",
+        "distance": 1.084002607488921
+      }
+    ]
+  }
+}

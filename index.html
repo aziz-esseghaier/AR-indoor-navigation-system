@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <title>Indoor Navigation AR</title>
+  </head>
+  <body>
+    <!-- AR Session Screen -->
+    <div id="overlay">
+      <div id="welcome-screen">
+        <div class="welcome-content">
+          <h1 class="app-title">Indoor Navigation AR</h1>
+          <p class="app-subtitle">Store reference points for indoor navigation</p>
+          <p class="app-instructions">Keep your phone in a fixed position throughout calibration</p>
+          <button id="ar-button">Start AR</button>
+        </div>
+      </div>
+      <button id="calibrate-button">Calibrate</button>
+      <button id="add-cube-button">Add Cube</button>
+      <button id="remove-cube-button">Remove Cube</button>
+      <button id="store-points-button">Store Points</button>
+      <button id="show-nearest-button">Show Nearest</button>
+      <button id="stop-ar-button">Stop AR</button>
+      <div id="calibration-status"></div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/webxr-polyfill@latest/build/webxr-polyfill.js"></script>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
