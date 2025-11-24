@@ -1,0 +1,1325 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Indoor Navigation - Waypoint Visualizer</title>
+    <style>
+        body { margin: 0; overflow: hidden; font-family: Arial, sans-serif; }
+        canvas { display: block; }
+        #info { 
+            position: absolute; 
+            top: 10px; 
+            left: 10px; 
+            color: white; 
+            background: rgba(0,0,0,0.8); 
+            padding: 15px;
+            border-radius: 5px;
+            max-width: 300px;
+        }
+        #info h3 { margin: 0 0 10px 0; }
+        #info p { margin: 5px 0; font-size: 14px; }
+        .stat { color: #4CAF50; font-weight: bold; }
+        #controls {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 12px;
+        }
+        #togglePath {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 12px 24px;
+            font-size: 14px;
+            font-weight: 600;
+            color: white;
+            background-color: #2196F3;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            width : 150px;
+        }
+        #togglePath:hover {
+            background-color: #1976D2;
+            transform: translateY(-2px);
+        }
+        #togglePath:active {
+            transform: translateY(0);
+        }
+        #toggleEdges {
+            position: absolute;
+            top: 60px;
+            right: 10px;
+            padding: 10px 20px;
+            font-size: 13px;
+            font-weight: 600;
+            color: white;
+            background-color: #2196F3;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            width : 150px;
+        }
+        #toggleEdges:hover {
+            background-color: #1976D2;
+            transform: translateY(-2px);
+        }
+        #toggleEdges:active {
+            transform: translateY(0);
+        }
+        #edgeBuilder {
+            position: absolute;
+            top: 110px;
+            right: 10px;
+            background: rgba(0,0,0,0.85);
+            color: white;
+            padding: 6px;
+            border-radius: 4px;
+            width: 150px;
+        }
+        #edgeBuilder h4 {
+            margin: 0 0 6px 0;
+            font-size: 11px;
+            color: #2196F3;
+        }
+        #edgeBuilder input {
+            width: calc(50% - 4px);
+            padding: 5px;
+            margin: 2px 1px;
+            border: 1px solid #444;
+            border-radius: 3px;
+            background: #222;
+            color: white;
+            font-size: 10px;
+        }
+        #edgeBuilder button {
+            width: 100%;
+            padding: 6px;
+            margin-top: 3px;
+            border: none;
+            border-radius: 3px;
+            background: #2196F3;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 10px;
+        }
+        #edgeBuilder button:hover {
+            background: #1976D2;
+        }
+        #edgeBuilder button:active {
+            transform: scale(0.98);
+        }
+        #edgeBuilder .saveBtn {
+            background: #4CAF50;
+            margin-top: 6px;
+        }
+        #edgeBuilder .saveBtn:hover {
+            background: #45a049;
+        }
+        #edgeBuilder .status {
+            font-size: 9px;
+            margin-top: 3px;
+            padding: 4px;
+            border-radius: 3px;
+            text-align: center;
+        }
+        #edgeBuilder .success {
+            background: rgba(76, 175, 80, 0.3);
+            color: #4CAF50;
+        }
+        #edgeBuilder .error {
+            background: rgba(244, 67, 54, 0.3);
+            color: #f44336;
+        }
+        #pathFinder {
+            position: absolute;
+            top: 290px;
+            right: 10px;
+            background: rgba(0,0,0,0.85);
+            color: white;
+            padding: 6px;
+            border-radius: 4px;
+            width: 150px;
+        }
+        #pathFinder h4 {
+            margin: 0 0 6px 0;
+            font-size: 11px;
+            color: #f44336;
+        }
+        #pathFinder input {
+            width: calc(50% - 4px);
+            padding: 5px;
+            margin: 2px 1px;
+            border: 1px solid #444;
+            border-radius: 3px;
+            background: #222;
+            color: white;
+            font-size: 10px;
+        }
+        #pathFinder button {
+            width: 100%;
+            padding: 6px;
+            margin-top: 3px;
+            border: none;
+            border-radius: 3px;
+            background: #f44336;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 10px;
+        }
+        #pathFinder button:hover {
+            background: #d32f2f;
+        }
+        #pathFinder button:active {
+            transform: scale(0.98);
+        }
+        #pathFinder .resetBtn {
+            background: #FF9800;
+            margin-top: 3px;
+        }
+        #pathFinder .resetBtn:hover {
+            background: #F57C00;
+        }
+        #pathFinder .pathStatus {
+            font-size: 9px;
+            margin-top: 3px;
+            padding: 4px;
+            border-radius: 3px;
+            text-align: center;
+        }
+        #pathFinder .success {
+            background: rgba(76, 175, 80, 0.3);
+            color: #4CAF50;
+        }
+        #pathFinder .error {
+            background: rgba(244, 67, 54, 0.3);
+            color: #f44336;
+        }
+        #roomMapper {
+            position: absolute;
+            top: 450px;
+            right: 10px;
+            background: rgba(0,0,0,0.85);
+            color: white;
+            padding: 6px;
+            border-radius: 4px;
+            width: 150px;
+        }
+        #roomMapper h4 {
+            margin: 0 0 6px 0;
+            font-size: 11px;
+            color: #9C27B0;
+        }
+        #roomMapper input {
+            width: calc(50% - 4px);
+            padding: 5px;
+            margin: 2px 1px;
+            border: 1px solid #444;
+            border-radius: 3px;
+            background: #222;
+            color: white;
+            font-size: 10px;
+        }
+        #roomMapper input.full {
+            width: calc(100% - 2px);
+        }
+        #roomMapper select {
+            width: calc(100% - 2px);
+            padding: 5px;
+            margin: 2px 1px;
+            border: 1px solid #444;
+            border-radius: 3px;
+            background: #222;
+            color: white;
+            font-size: 10px;
+        }
+        #roomMapper button {
+            width: 100%;
+            padding: 6px;
+            margin-top: 3px;
+            border: none;
+            border-radius: 3px;
+            background: #9C27B0;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 10px;
+        }
+        #roomMapper button:hover {
+            background: #7B1FA2;
+        }
+        #roomMapper button:active {
+            transform: scale(0.98);
+        }
+        #roomMapper .saveBtn {
+            background: #4CAF50;
+            margin-top: 3px;
+        }
+        #roomMapper .saveBtn:hover {
+            background: #45a049;
+        }
+        #roomMapper .roomStatus {
+            font-size: 9px;
+            margin-top: 3px;
+            padding: 4px;
+            border-radius: 3px;
+            text-align: center;
+        }
+        #roomMapper .success {
+            background: rgba(76, 175, 80, 0.3);
+            color: #4CAF50;
+        }
+        #roomMapper .error {
+            background: rgba(244, 67, 54, 0.3);
+            color: #f44336;
+        }
+        #nodeDeleter {
+            position: absolute;
+            top: 150px;
+            left: 10px;
+            background: rgba(0,0,0,0.85);
+            color: white;
+            padding: 6px;
+            border-radius: 4px;
+            width: 150px;
+        }
+        #nodeDeleter h4 {
+            margin: 0 0 6px 0;
+            font-size: 11px;
+            color: #FF5722;
+        }
+        #nodeDeleter input {
+            width: calc(100% - 2px);
+            padding: 5px;
+            margin: 2px 1px;
+            border: 1px solid #444;
+            border-radius: 3px;
+            background: #222;
+            color: white;
+            font-size: 10px;
+        }
+        #nodeDeleter button {
+            width: 100%;
+            padding: 6px;
+            margin-top: 3px;
+            border: none;
+            border-radius: 3px;
+            background: #FF5722;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 10px;
+        }
+        #nodeDeleter button:hover {
+            background: #E64A19;
+        }
+        #nodeDeleter button:active {
+            transform: scale(0.98);
+        }
+        #nodeDeleter .deleteStatus {
+            font-size: 9px;
+            margin-top: 3px;
+            padding: 4px;
+            border-radius: 3px;
+            text-align: center;
+        }
+        #nodeDeleter .success {
+            background: rgba(76, 175, 80, 0.3);
+            color: #4CAF50;
+        }
+        #nodeDeleter .error {
+            background: rgba(244, 67, 54, 0.3);
+            color: #f44336;
+        }
+    </style>
+</head>
+<body>
+    <button id="togglePath">Hide Path</button>
+    <button id="toggleEdges">Hide Edges</button>
+    
+    <div id="pathFinder">
+        <h4>Shortest Path Finder</h4>
+        <input type="number" id="startNode" placeholder="Start" min="0">
+        <input type="number" id="endNode" placeholder="End" min="0">
+        <button id="findPathBtn">Find Path</button>
+        <button class="resetBtn" id="resetPathBtn">Reset Path</button>
+        <div id="pathStatus"></div>
+    </div>
+    
+    <div id="roomMapper">
+        <h4>Room Mapping</h4>
+        <input type="number" id="nodeNum" placeholder="Node" min="0">
+        <input type="text" id="roomNum" class="full" placeholder="Room (e.g., A221)">
+        <button id="addRoomBtn">Add Mapping</button>
+        <select id="roomSelect">
+            <option value="">Select to remove...</option>
+        </select>
+        <button id="removeRoomBtn" style="background: #f44336;">Remove Mapping</button>
+        <button class="saveBtn" id="saveRoomsBtn">Save Mappings</button>
+        <div id="roomStatus"></div>
+    </div>
+    
+    <div id="nodeDeleter">
+        <h4>Delete Node</h4>
+        <input type="number" id="deleteNodeNum" placeholder="Node ID" min="0">
+        <button id="deleteNodeBtn">Delete Node</button>
+        <div id="deleteStatus"></div>
+    </div>
+    
+    <div id="edgeBuilder">
+        <h4>Graph Edge Builder</h4>
+        <input type="number" id="node1" placeholder="0" min="0">
+        <input type="number" id="node2" placeholder="1" min="0">
+        <button id="addEdgeBtn">Add Edge</button>
+        <button id="removeEdgeBtn" style="background: #f44336;">Remove Edge</button>
+        <button class="saveBtn" id="saveGraphBtn">Save Graph</button>
+        <div id="edgeStatus"></div>
+    </div>
+    
+    <div id="info">
+        <h3>Indoor Navigation Waypoints</h3>
+        <p>Total Points: <span class="stat" id="count">0</span></p>
+        <p>Path Length: <span class="stat" id="length">0</span> meters</p>
+        <p>Timestamp: <span id="timestamp"></span></p>
+    </div>
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.module.js",
+            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.158.0/examples/jsm/"
+        }
+    }
+    </script>
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+        // Graph adjacency list
+        let adjacencyList = {};
+        let edgeLines = []; // Store edge line objects
+        let cubePositions = {}; // Map cube_id -> position
+        let selectedNodes = [];
+        let selectedSpheres = [];
+        let pathLines = []; // Store shortest path visualization
+        let roomMapping = {}; // Map cube_id -> room number
+
+        // Load waypoints from API
+        async function loadData() {
+            try {
+                const response = await fetch('/api/positions');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.json();
+                console.log('Loaded data from API:', data);
+                return data;
+            } catch (err) {
+                console.error('Failed to load data:', err);
+                throw err;
+            }
+        }
+
+        // Load adjacency list
+        async function loadGraph() {
+            try {
+                const response = await fetch('/api/graph');
+                if (response.ok) {
+                    const data = await response.json();
+                    adjacencyList = data.adjacencyList || {};
+                    console.log('Loaded graph:', adjacencyList);
+                }
+            } catch (err) {
+                console.log('No existing graph, starting fresh');
+                adjacencyList = {};
+            }
+        }
+
+        // Load room mappings
+        async function loadRoomMappings() {
+            try {
+                const response = await fetch('/api/rooms');
+                if (response.ok) {
+                    const data = await response.json();
+                    roomMapping = data.roomMapping || {};
+                    console.log('Loaded room mappings:', roomMapping);
+                    updateRoomDropdown();
+                }
+            } catch (err) {
+                console.log('No existing room mappings, starting fresh');
+                roomMapping = {};
+            }
+        }
+
+        // Save room mappings
+        async function saveRoomMappings() {
+            try {
+                const response = await fetch('/api/rooms', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ roomMapping })
+                });
+                
+                if (response.ok) {
+                    showRoomStatus('Room mappings saved!', 'success');
+                } else {
+                    throw new Error('Save failed');
+                }
+            } catch (err) {
+                showRoomStatus('Error saving mappings', 'error');
+                console.error('Save error:', err);
+            }
+        }
+
+        function showRoomStatus(message, type) {
+            const statusDiv = document.getElementById('roomStatus');
+            statusDiv.textContent = message;
+            statusDiv.className = 'roomStatus ' + type;
+            setTimeout(() => {
+                statusDiv.textContent = '';
+                statusDiv.className = 'roomStatus';
+            }, 3000);
+        }
+
+        function showDeleteStatus(message, type) {
+            const statusDiv = document.getElementById('deleteStatus');
+            statusDiv.textContent = message;
+            statusDiv.className = 'deleteStatus ' + type;
+            setTimeout(() => {
+                statusDiv.textContent = '';
+                statusDiv.className = 'deleteStatus';
+            }, 3000);
+        }
+
+        // Delete node from all files
+        async function deleteNode(nodeId) {
+            try {
+                // Load current positions
+                const posResponse = await fetch('/api/positions');
+                const posData = await posResponse.json();
+                
+                // Find and remove the node
+                const nodeIndex = posData.cubes.findIndex(cube => cube.id === nodeId);
+                if (nodeIndex === -1) {
+                    showDeleteStatus('Node not found', 'error');
+                    return false;
+                }
+                
+                posData.cubes.splice(nodeIndex, 1);
+                posData.cubeCount = posData.cubes.length;
+                posData.timestamp = new Date().toISOString();
+                
+                // Save updated positions
+                await fetch('/api/positions', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(posData)
+                });
+                
+                // Remove from room mapping
+                if (roomMapping[nodeId]) {
+                    delete roomMapping[nodeId];
+                    await saveRoomMappings();
+                    updateRoomDropdown();
+                }
+                
+                // Remove from adjacency list
+                // Remove node's own list
+                if (adjacencyList[nodeId]) {
+                    delete adjacencyList[nodeId];
+                }
+                
+                // Remove node from other nodes' adjacency lists
+                for (const node in adjacencyList) {
+                    adjacencyList[node] = adjacencyList[node].filter(edge => {
+                        const neighbor = edge.node || edge;
+                        return neighbor !== nodeId;
+                    });
+                    
+                    // Clean up empty adjacency lists
+                    if (adjacencyList[node].length === 0) {
+                        delete adjacencyList[node];
+                    }
+                }
+                
+                await saveGraph();
+                
+                showDeleteStatus(`Node ${nodeId} deleted successfully`, 'success');
+                return true;
+            } catch (error) {
+                showDeleteStatus('Error deleting node', 'error');
+                console.error('Delete error:', error);
+                return false;
+            }
+        }
+
+        // Update room mapping dropdown
+        function updateRoomDropdown() {
+            const select = document.getElementById('roomSelect');
+            select.innerHTML = '<option value="">Select to remove...</option>';
+            
+            for (const [nodeId, roomNum] of Object.entries(roomMapping)) {
+                const option = document.createElement('option');
+                option.value = nodeId;
+                option.textContent = `${nodeId.replace('cube_', '')} → ${roomNum}`;
+                select.appendChild(option);
+            }
+        }
+
+        // Save adjacency list
+        async function saveGraph() {
+            try {
+                const response = await fetch('/api/graph', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ adjacencyList })
+                });
+                
+                if (response.ok) {
+                    showStatus('Graph saved successfully!', 'success');
+                } else {
+                    throw new Error('Save failed');
+                }
+            } catch (err) {
+                showStatus('Error saving graph', 'error');
+                console.error('Save error:', err);
+            }
+        }
+
+        function showStatus(message, type) {
+            const statusDiv = document.getElementById('edgeStatus');
+            statusDiv.textContent = message;
+            statusDiv.className = 'status ' + type;
+            setTimeout(() => {
+                statusDiv.textContent = '';
+                statusDiv.className = 'status';
+            }, 3000);
+        }
+
+        loadGraph();
+        loadRoomMappings();
+        
+        loadData()
+            .then(data => {
+                document.getElementById('count').textContent = data.cubeCount;
+                document.getElementById('timestamp').textContent = new Date(data.timestamp).toLocaleString();
+                initScene(data);
+            })
+            .catch(err => {
+                console.error('Load error:', err);
+                document.getElementById('info').innerHTML = '<h3>Error</h3><p>Could not load data. Make sure the server is running.</p>';
+            });
+
+        function initScene(data) {
+            // Scene setup
+            const scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x0a0a0a);
+            scene.fog = new THREE.Fog(0x0a0a0a, 10, 50);
+
+            // Camera
+            const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.set(-5, 10, 15);
+
+            // Renderer
+            const renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.shadowMap.enabled = true;
+            document.body.appendChild(renderer.domElement);
+
+            // Controls - ALLOWS ROTATION!
+            const controls = new OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+            controls.target.set(-2, 1, -7); // Center on your path
+
+            // Grid
+            const gridHelper = new THREE.GridHelper(40, 40, 0x444444, 0x222222);
+            scene.add(gridHelper);
+
+            // Axes (X=Red, Y=Green, Z=Blue)
+            const axesHelper = new THREE.AxesHelper(8);
+            scene.add(axesHelper);
+
+            // Raycaster for mouse picking
+            const raycaster = new THREE.Raycaster();
+            const mouse = new THREE.Vector2();
+            const sphereMeshes = []; // Store sphere meshes for raycasting
+
+            // Create waypoint spheres and path
+            const points = [];
+            let totalDistance = 0;
+
+            data.cubes.forEach((cube, index) => {
+                const pos = cube.worldPosition;
+                
+                // Store position for graph edges
+                cubePositions[cube.id] = new THREE.Vector3(pos.x, pos.y, pos.z);
+                
+                // Waypoint sphere
+                const geometry = new THREE.SphereGeometry(0.2, 32, 32);
+                const material = new THREE.MeshStandardMaterial({ 
+                    color: index === 0 ? 0x00ff00 : // First = Green
+                           index === data.cubes.length - 1 ? 0xff0000 : // Last = Red
+                           0x2196F3, // Others = Blue
+                    emissive: index === 0 || index === data.cubes.length - 1 ? 0x444444 : 0x000000,
+                    metalness: 0.3,
+                    roughness: 0.4
+                });
+                const sphere = new THREE.Mesh(geometry, material);
+                sphere.position.set(pos.x, pos.y, pos.z);
+                sphere.castShadow = true;
+                sphere.userData = { cubeId: cube.id }; // Store cube ID for picking
+                scene.add(sphere);
+                sphereMeshes.push(sphere); // Add to pickable objects
+
+                // Add to path
+                points.push(new THREE.Vector3(pos.x, pos.y, pos.z));
+
+                // Calculate distance
+                if (index > 0) {
+                    const prev = data.cubes[index - 1].worldPosition;
+                    const dist = Math.sqrt(
+                        Math.pow(pos.x - prev.x, 2) +
+                        Math.pow(pos.y - prev.y, 2) +
+                        Math.pow(pos.z - prev.z, 2)
+                    );
+                    totalDistance += dist;
+                }
+
+                // Label
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                canvas.width = 512;
+                canvas.height = 256;
+                
+                // Background
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+                ctx.fillRect(0, 0, 512, 256);
+                
+                // Text
+                ctx.fillStyle = 'white';
+                ctx.font = 'bold 80px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText(cube.id.replace('cube_', '#'), 256, 140);
+
+                const texture = new THREE.CanvasTexture(canvas);
+                const spriteMaterial = new THREE.SpriteMaterial({ 
+                    map: texture,
+                    transparent: true
+                });
+                const sprite = new THREE.Sprite(spriteMaterial);
+                sprite.position.copy(sphere.position);
+                sprite.position.y += 0.5;
+                sprite.scale.set(1, 0.5, 1);
+                scene.add(sprite);
+            });
+
+            // Update total distance
+            document.getElementById('length').textContent = totalDistance.toFixed(2);
+
+            // Only create path visualization if we have at least 2 points
+            if (points.length >= 2) {
+                // Path line
+                const lineGeometry = new THREE.BufferGeometry().setFromPoints(points);
+                const lineMaterial = new THREE.LineBasicMaterial({ 
+                    color: 0xffff00,
+                    linewidth: 3
+                });
+                const line = new THREE.Line(lineGeometry, lineMaterial);
+                line.name = 'pathLine'; // Add name for easy reference
+                scene.add(line);
+
+                // Path tube (thicker visual)
+                const tubePath = new THREE.CatmullRomCurve3(points);
+                const tubeGeometry = new THREE.TubeGeometry(tubePath, points.length * 2, 0.05, 8, false);
+                const tubeMaterial = new THREE.MeshStandardMaterial({ 
+                    color: 0xffaa00,
+                    emissive: 0x442200
+                });
+                const tube = new THREE.Mesh(tubeGeometry, tubeMaterial);
+                tube.name = 'pathTube'; // Add name for easy reference
+                scene.add(tube);
+
+                // Toggle path visibility - hidden by default
+                let pathVisible = false;
+                line.visible = false;
+                tube.visible = false;
+                
+                const toggleButton = document.getElementById('togglePath');
+                toggleButton.textContent = 'Show Path';
+                toggleButton.style.backgroundColor = '#4CAF50';
+                
+                toggleButton.addEventListener('click', () => {
+                    pathVisible = !pathVisible;
+                    line.visible = pathVisible;
+                    tube.visible = pathVisible;
+                    toggleButton.textContent = pathVisible ? 'Hide Path' : 'Show Path';
+                    toggleButton.style.backgroundColor = pathVisible ? '#2196F3' : '#4CAF50';
+                });
+            } else {
+                // Disable toggle button if not enough points
+                const toggleButton = document.getElementById('togglePath');
+                toggleButton.textContent = 'Need 2+ Points';
+                toggleButton.disabled = true;
+                toggleButton.style.backgroundColor = '#666';
+            }
+
+            // Toggle edges visibility
+            let edgesVisible = true;
+            const toggleEdgesButton = document.getElementById('toggleEdges');
+            
+            toggleEdgesButton.addEventListener('click', () => {
+                edgesVisible = !edgesVisible;
+                
+                // Toggle visibility of all graph edges
+                edgeLines.forEach(edge => {
+                    edge.visible = edgesVisible;
+                });
+                
+                toggleEdgesButton.textContent = edgesVisible ? 'Hide Edges' : 'Show Edges';
+                toggleEdgesButton.style.backgroundColor = edgesVisible ? '#2196F3' : '#4CAF50';
+            });
+
+            // Function to add edge to graph
+            function addEdge(node1, node2) {
+                if (!cubePositions[node1] || !cubePositions[node2]) {
+                    showStatus('Invalid node IDs', 'error');
+                    return false;
+                }
+
+                // Calculate distance between nodes
+                const pos1 = cubePositions[node1];
+                const pos2 = cubePositions[node2];
+                const distance = pos1.distanceTo(pos2);
+
+                // Add to adjacency list (bidirectional) with distance
+                if (!adjacencyList[node1]) adjacencyList[node1] = [];
+                if (!adjacencyList[node2]) adjacencyList[node2] = [];
+                
+                // Check if edge already exists
+                const existingEdge1 = adjacencyList[node1].find(e => e.node === node2);
+                if (!existingEdge1) {
+                    adjacencyList[node1].push({ node: node2, distance: distance });
+                }
+                
+                const existingEdge2 = adjacencyList[node2].find(e => e.node === node1);
+                if (!existingEdge2) {
+                    adjacencyList[node2].push({ node: node1, distance: distance });
+                }
+
+                // Create visual edge (blue tube)
+                const edgePath = new THREE.LineCurve3(
+                    cubePositions[node1],
+                    cubePositions[node2]
+                );
+                const edgeTubeGeometry = new THREE.TubeGeometry(edgePath, 20, 0.08, 8, false);
+                const edgeTubeMaterial = new THREE.MeshStandardMaterial({ 
+                    color: 0x2196F3,
+                    emissive: 0x0066cc,
+                    emissiveIntensity: 0.5,
+                    metalness: 0.3,
+                    roughness: 0.4
+                });
+                const edgeTube = new THREE.Mesh(edgeTubeGeometry, edgeTubeMaterial);
+                edgeTube.name = `edge_${node1}_${node2}`;
+                edgeTube.castShadow = true;
+                scene.add(edgeTube);
+                edgeLines.push(edgeTube);
+
+                showStatus(`Edge added: ${node1} ↔ ${node2} (${distance.toFixed(2)}m)`, 'success');
+                console.log('Current graph:', adjacencyList);
+                return true;
+            }
+
+            // Function to remove edge from graph
+            function removeEdge(node1, node2) {
+                // Remove from adjacency list
+                if (adjacencyList[node1]) {
+                    const index1 = adjacencyList[node1].findIndex(e => e.node === node2);
+                    if (index1 > -1) {
+                        adjacencyList[node1].splice(index1, 1);
+                    }
+                    if (adjacencyList[node1].length === 0) {
+                        delete adjacencyList[node1];
+                    }
+                }
+                
+                if (adjacencyList[node2]) {
+                    const index2 = adjacencyList[node2].findIndex(e => e.node === node1);
+                    if (index2 > -1) {
+                        adjacencyList[node2].splice(index2, 1);
+                    }
+                    if (adjacencyList[node2].length === 0) {
+                        delete adjacencyList[node2];
+                    }
+                }
+
+                // Remove visual edge from scene - try all possible name formats
+                const possibleNames = [
+                    `edge_${node1}_${node2}`,
+                    `edge_${node2}_${node1}`
+                ];
+                
+                let edgeToRemove = null;
+                for (const name of possibleNames) {
+                    edgeToRemove = edgeLines.find(edge => edge.name === name);
+                    if (edgeToRemove) break;
+                }
+                
+                if (edgeToRemove) {
+                    scene.remove(edgeToRemove);
+                    edgeToRemove.geometry.dispose();
+                    edgeToRemove.material.dispose();
+                    
+                    const edgeIndex = edgeLines.indexOf(edgeToRemove);
+                    if (edgeIndex > -1) {
+                        edgeLines.splice(edgeIndex, 1);
+                    }
+                    
+                    showStatus(`Edge removed: ${node1} ↔ ${node2}`, 'success');
+                    console.log('Edge removed from scene:', edgeToRemove.name);
+                } else {
+                    showStatus('No edge found between these nodes', 'error');
+                    console.log('Could not find edge. Available edges:', edgeLines.map(e => e.name));
+                }
+                
+                console.log('Current graph:', adjacencyList);
+            }
+
+            // Draw existing edges from loaded graph
+            function drawExistingEdges() {
+                const drawnEdges = new Set();
+                
+                for (const node1 in adjacencyList) {
+                    for (const edge of adjacencyList[node1]) {
+                        const node2 = edge.node || edge; // Support both old and new format
+                        const edgeKey = [node1, node2].sort().join('_');
+                        
+                        if (!drawnEdges.has(edgeKey) && cubePositions[node1] && cubePositions[node2]) {
+                            const edgePath = new THREE.LineCurve3(
+                                cubePositions[node1],
+                                cubePositions[node2]
+                            );
+                            const edgeTubeGeometry = new THREE.TubeGeometry(edgePath, 20, 0.08, 8, false);
+                            const edgeTubeMaterial = new THREE.MeshStandardMaterial({ 
+                                color: 0x2196F3,
+                                emissive: 0x0066cc,
+                                emissiveIntensity: 0.5,
+                                metalness: 0.3,
+                                roughness: 0.4
+                            });
+                            const edgeTube = new THREE.Mesh(edgeTubeGeometry, edgeTubeMaterial);
+                            edgeTube.name = `edge_${node1}_${node2}`;
+                            edgeTube.castShadow = true;
+                            scene.add(edgeTube);
+                            edgeLines.push(edgeTube);
+                            drawnEdges.add(edgeKey);
+                        }
+                    }
+                }
+            }
+
+            // Load and draw existing edges after a short delay
+            setTimeout(() => {
+                drawExistingEdges();
+            }, 500);
+
+            // Add edge button handler
+            document.getElementById('addEdgeBtn').addEventListener('click', () => {
+                const num1 = document.getElementById('node1').value.trim();
+                const num2 = document.getElementById('node2').value.trim();
+                
+                if (num1 && num2 && num1 !== num2) {
+                    const node1 = `cube_${num1}`;
+                    const node2 = `cube_${num2}`;
+                    addEdge(node1, node2);
+                    document.getElementById('node1').value = '';
+                    document.getElementById('node2').value = '';
+                } else {
+                    showStatus('Enter two different node numbers', 'error');
+                }
+            });
+
+            // Remove edge button handler
+            document.getElementById('removeEdgeBtn').addEventListener('click', () => {
+                const num1 = document.getElementById('node1').value.trim();
+                const num2 = document.getElementById('node2').value.trim();
+                
+                if (num1 && num2 && num1 !== num2) {
+                    const node1 = `cube_${num1}`;
+                    const node2 = `cube_${num2}`;
+                    removeEdge(node1, node2);
+                    document.getElementById('node1').value = '';
+                    document.getElementById('node2').value = '';
+                } else {
+                    showStatus('Enter two different node numbers', 'error');
+                }
+            });
+
+            // Save graph button handler
+            document.getElementById('saveGraphBtn').addEventListener('click', () => {
+                saveGraph();
+            });
+
+            // Add room mapping button handler
+            document.getElementById('addRoomBtn').addEventListener('click', () => {
+                const nodeNum = document.getElementById('nodeNum').value.trim();
+                const roomNum = document.getElementById('roomNum').value.trim();
+                
+                if (nodeNum && roomNum) {
+                    const nodeId = `cube_${nodeNum}`;
+                    
+                    if (!cubePositions[nodeId]) {
+                        showRoomStatus('Invalid node ID', 'error');
+                        return;
+                    }
+                    
+                    roomMapping[nodeId] = roomNum;
+                    showRoomStatus(`Mapped: ${nodeId} → ${roomNum}`, 'success');
+                    console.log('Current room mappings:', roomMapping);
+                    updateRoomDropdown();
+                    
+                    document.getElementById('nodeNum').value = '';
+                    document.getElementById('roomNum').value = '';
+                } else {
+                    showRoomStatus('Enter node and room number', 'error');
+                }
+            });
+
+            // Remove room mapping button handler
+            document.getElementById('removeRoomBtn').addEventListener('click', () => {
+                const select = document.getElementById('roomSelect');
+                const nodeId = select.value;
+                
+                if (nodeId && roomMapping[nodeId]) {
+                    const roomNum = roomMapping[nodeId];
+                    delete roomMapping[nodeId];
+                    showRoomStatus(`Removed: ${nodeId} → ${roomNum}`, 'success');
+                    console.log('Current room mappings:', roomMapping);
+                    updateRoomDropdown();
+                    select.value = '';
+                } else {
+                    showRoomStatus('Select a mapping to remove', 'error');
+                }
+            });
+
+            // Save room mappings button handler
+            document.getElementById('saveRoomsBtn').addEventListener('click', () => {
+                saveRoomMappings();
+            });
+
+            // Delete node button handler
+            document.getElementById('deleteNodeBtn').addEventListener('click', async () => {
+                const nodeNum = document.getElementById('deleteNodeNum').value.trim();
+                
+                if (nodeNum) {
+                    const nodeId = `cube_${nodeNum}`;
+                    
+                    if (!cubePositions[nodeId]) {
+                        showDeleteStatus('Node not found', 'error');
+                        return;
+                    }
+                    
+                    const confirmed = confirm(`Are you sure you want to delete node ${nodeNum}? This will remove it from all files and cannot be undone.`);
+                    
+                    if (confirmed) {
+                        const success = await deleteNode(nodeId);
+                        if (success) {
+                            document.getElementById('deleteNodeNum').value = '';
+                            // Reload page to update visualization
+                            setTimeout(() => {
+                                location.reload();
+                            }, 1500);
+                        }
+                    }
+                } else {
+                    showDeleteStatus('Enter a node ID', 'error');
+                }
+            });
+
+            // Mouse click handler for selecting waypoints (toggle edge)
+            function onMouseClick(event) {
+                // Calculate mouse position in normalized device coordinates
+                mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+                mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+                // Raycast from camera to mouse position
+                raycaster.setFromCamera(mouse, camera);
+                const intersects = raycaster.intersectObjects(sphereMeshes);
+
+                if (intersects.length > 0) {
+                    const clickedSphere = intersects[0].object;
+                    const cubeId = clickedSphere.userData.cubeId;
+
+                    // Check if already selected - if so, deselect it
+                    const alreadySelectedIndex = selectedNodes.indexOf(cubeId);
+                    if (alreadySelectedIndex > -1) {
+                        // Remove from arrays
+                        selectedNodes.splice(alreadySelectedIndex, 1);
+                        selectedSpheres.splice(alreadySelectedIndex, 1);
+                        
+                        // Reset visual feedback
+                        const index = parseInt(cubeId.replace('cube_', ''));
+                        if (index === 0 || index === data.cubes.length - 1) {
+                            clickedSphere.material.emissive.setHex(0x444444);
+                            clickedSphere.material.emissiveIntensity = 0.3;
+                        } else {
+                            clickedSphere.material.emissive.setHex(0x000000);
+                            clickedSphere.material.emissiveIntensity = 0;
+                        }
+                        
+                        showStatus(`Deselected: ${cubeId}`, 'success');
+                        return;
+                    }
+
+                    // Add to selection
+                    selectedNodes.push(cubeId);
+                    selectedSpheres.push(clickedSphere);
+
+                    // Visual feedback - yellow glow
+                    clickedSphere.material.emissive.setHex(0xffff00);
+                    clickedSphere.material.emissiveIntensity = 0.8;
+
+                    showStatus(`Selected: ${cubeId}`, 'success');
+
+                    // If two nodes selected, toggle edge
+                    if (selectedNodes.length === 2) {
+                        toggleEdge(selectedNodes[0], selectedNodes[1]);
+                        clearSelections();
+                    }
+                }
+            }
+
+            // Toggle edge - add if doesn't exist, remove if exists
+            function toggleEdge(node1, node2) {
+                // Check if edge exists
+                const edgeExists = adjacencyList[node1] && adjacencyList[node1].find(e => e.node === node2);
+                
+                if (edgeExists) {
+                    removeEdge(node1, node2);
+                } else {
+                    addEdge(node1, node2);
+                }
+            }
+
+            function clearSelections() {
+                // Reset emissive on selected spheres
+                selectedSpheres.forEach(sphere => {
+                    const cubeId = sphere.userData.cubeId;
+                    const index = parseInt(cubeId.replace('cube_', ''));
+                    
+                    if (index === 0 || index === data.cubes.length - 1) {
+                        sphere.material.emissive.setHex(0x444444);
+                        sphere.material.emissiveIntensity = 0.3;
+                    } else {
+                        sphere.material.emissive.setHex(0x000000);
+                        sphere.material.emissiveIntensity = 0;
+                    }
+                });
+
+                selectedNodes = [];
+                selectedSpheres = [];
+            }
+
+            // Dijkstra's algorithm for shortest path
+            function dijkstra(startNode, endNode) {
+                const distances = {};
+                const previous = {};
+                const unvisited = new Set();
+
+                // Initialize distances
+                for (const node in cubePositions) {
+                    distances[node] = Infinity;
+                    previous[node] = null;
+                    unvisited.add(node);
+                }
+                distances[startNode] = 0;
+
+                while (unvisited.size > 0) {
+                    // Find node with minimum distance
+                    let currentNode = null;
+                    let minDistance = Infinity;
+                    for (const node of unvisited) {
+                        if (distances[node] < minDistance) {
+                            minDistance = distances[node];
+                            currentNode = node;
+                        }
+                    }
+
+                    if (currentNode === null || distances[currentNode] === Infinity) {
+                        break; // No path exists
+                    }
+
+                    if (currentNode === endNode) {
+                        break; // Found shortest path to end
+                    }
+
+                    unvisited.delete(currentNode);
+
+                    // Check neighbors
+                    if (adjacencyList[currentNode]) {
+                        for (const edge of adjacencyList[currentNode]) {
+                            const neighbor = edge.node || edge;
+                            const weight = edge.distance || 1;
+                            
+                            if (unvisited.has(neighbor)) {
+                                const altDistance = distances[currentNode] + weight;
+                                if (altDistance < distances[neighbor]) {
+                                    distances[neighbor] = altDistance;
+                                    previous[neighbor] = currentNode;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Reconstruct path
+                const path = [];
+                let current = endNode;
+                while (current !== null) {
+                    path.unshift(current);
+                    current = previous[current];
+                }
+
+                if (path[0] !== startNode) {
+                    return null; // No path found
+                }
+
+                return { path, distance: distances[endNode] };
+            }
+
+            // Visualize shortest path
+            function visualizePath(path) {
+                // Clear previous path
+                resetPath();
+
+                if (!path || path.length < 2) return;
+
+                // Create red tubes for each edge in the path
+                for (let i = 0; i < path.length - 1; i++) {
+                    const node1 = path[i];
+                    const node2 = path[i + 1];
+
+                    if (cubePositions[node1] && cubePositions[node2]) {
+                        const edgePath = new THREE.LineCurve3(
+                            cubePositions[node1],
+                            cubePositions[node2]
+                        );
+                        const pathTubeGeometry = new THREE.TubeGeometry(edgePath, 20, 0.12, 8, false);
+                        const pathTubeMaterial = new THREE.MeshStandardMaterial({ 
+                            color: 0xff0000,
+                            emissive: 0xff0000,
+                            emissiveIntensity: 0.7,
+                            metalness: 0.3,
+                            roughness: 0.4
+                        });
+                        const pathTube = new THREE.Mesh(pathTubeGeometry, pathTubeMaterial);
+                        pathTube.name = `path_${node1}_${node2}`;
+                        scene.add(pathTube);
+                        pathLines.push(pathTube);
+                    }
+                }
+            }
+
+            // Reset path visualization
+            function resetPath() {
+                pathLines.forEach(line => {
+                    scene.remove(line);
+                    line.geometry.dispose();
+                    line.material.dispose();
+                });
+                pathLines = [];
+            }
+
+            // Find path button handler
+            document.getElementById('findPathBtn').addEventListener('click', () => {
+                const startNum = document.getElementById('startNode').value.trim();
+                const endNum = document.getElementById('endNode').value.trim();
+                
+                if (startNum && endNum && startNum !== endNum) {
+                    const startNode = `cube_${startNum}`;
+                    const endNode = `cube_${endNum}`;
+                    
+                    if (!cubePositions[startNode] || !cubePositions[endNode]) {
+                        showPathStatus('Invalid node IDs', 'error');
+                        return;
+                    }
+
+                    const result = dijkstra(startNode, endNode);
+                    
+                    if (result && result.path) {
+                        visualizePath(result.path);
+                        const pathStr = result.path.map(n => n.replace('cube_', '')).join(' → ');
+                        showPathStatus(`Path: ${pathStr} (${result.distance.toFixed(2)}m)`, 'success');
+                    } else {
+                        showPathStatus('No path found between nodes', 'error');
+                    }
+                } else {
+                    showPathStatus('Enter two different node numbers', 'error');
+                }
+            });
+
+            // Reset path button handler
+            document.getElementById('resetPathBtn').addEventListener('click', () => {
+                resetPath();
+                document.getElementById('startNode').value = '';
+                document.getElementById('endNode').value = '';
+                showPathStatus('Path cleared', 'success');
+            });
+
+            function showPathStatus(message, type) {
+                const statusDiv = document.getElementById('pathStatus');
+                statusDiv.textContent = message;
+                statusDiv.className = 'pathStatus ' + type;
+                setTimeout(() => {
+                    statusDiv.textContent = '';
+                    statusDiv.className = 'pathStatus';
+                }, 5000);
+            }
+
+            // Add click event listener
+            window.addEventListener('click', onMouseClick, false);
+
+            // Lighting
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+            scene.add(ambientLight);
+
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            directionalLight.position.set(10, 20, 10);
+            directionalLight.castShadow = true;
+            scene.add(directionalLight);
+
+            const pointLight = new THREE.PointLight(0x4444ff, 1, 20);
+            pointLight.position.set(-5, 5, -7);
+            scene.add(pointLight);
+
+            // Animation loop
+            function animate() {
+                requestAnimationFrame(animate);
+                controls.update();
+                renderer.render(scene, camera);
+            }
+            animate();
+
+            // Window resize
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+        }
+    </script>
+</body>
+</html>

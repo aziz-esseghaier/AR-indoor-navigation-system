@@ -1,0 +1,321 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <title>AR Navigation</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        width: 100vw;
+        height: 100vh;
+        overflow: hidden;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-user-select: none;
+        user-select: none;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      #welcome-screen {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        z-index: 998;
+        transition: opacity 0.5s ease, visibility 0.5s ease;
+      }
+
+      #welcome-screen.hidden {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+      }
+
+      .welcome-content {
+        text-align: center;
+        color: white;
+        padding: 40px 20px;
+        max-width: 500px;
+      }
+
+      .app-title {
+        font-size: 36px;
+        font-weight: 700;
+        margin: 0 0 10px 0;
+        letter-spacing: -0.5px;
+        text-shadow: 0 2px 20px rgba(0, 0, 0, 0.2);
+      }
+
+      .app-subtitle {
+        font-size: 16px;
+        font-weight: 400;
+        margin: 0 0 20px 0;
+        opacity: 0.9;
+        letter-spacing: 0.5px;
+        line-height: 1.6;
+      }
+
+      .app-instructions {
+        font-size: 14px;
+        font-weight: 500;
+        margin: 0 0 20px 0;
+        padding: 12px 20px;
+        background-color: rgba(255, 255, 255, 0.15);
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        letter-spacing: 0.3px;
+        line-height: 1.5;
+      }
+
+      .room-selector {
+        margin: 0 0 25px 0;
+        text-align: center;
+      }
+
+      .room-selector label {
+        display: block;
+        font-size: 14px;
+        font-weight: 600;
+        margin-bottom: 10px;
+        color: white;
+        letter-spacing: 0.5px;
+      }
+
+      .room-selector select {
+        width: 100%;
+        max-width: 300px;
+        padding: 12px 16px;
+        font-size: 16px;
+        font-weight: 500;
+        color: #333;
+        background-color: white;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-radius: 12px;
+        cursor: pointer;
+        outline: none;
+        -webkit-appearance: none;
+        appearance: none;
+        background-image: url('data:image/svg+xml;charset=UTF-8,%3csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%23333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"%3e%3cpolyline points="6 9 12 15 18 9"%3e%3c/polyline%3e%3c/svg%3e');
+        background-repeat: no-repeat;
+        background-position: right 12px center;
+        background-size: 20px;
+        padding-right: 40px;
+      }
+
+      .room-selector select:focus {
+        border-color: #00aa00;
+        box-shadow: 0 0 0 3px rgba(0, 170, 0, 0.2);
+      }
+
+      #start-ar-button {
+        padding: 16px 48px;
+        font-size: 18px;
+        font-weight: 600;
+        color: white;
+        background-color: #00aa00;
+        border: none;
+        border-radius: 20px;
+        cursor: pointer;
+        box-shadow: 0 2px 8px rgba(0, 170, 0, 0.4);
+        transition: all 0.3s ease;
+        -webkit-appearance: none;
+        appearance: none;
+      }
+
+      #start-ar-button:hover {
+        background-color: #00cc00;
+        box-shadow: 0 4px 12px rgba(0, 170, 0, 0.6);
+        transform: translateY(-2px);
+      }
+
+      #start-ar-button:active {
+        transform: translateY(0);
+        box-shadow: 0 2px 8px rgba(0, 170, 0, 0.4);
+      }
+
+      canvas {
+        display: block;
+        width: 100%;
+        height: 100%;
+        touch-action: none;
+      }
+
+      #overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 1000;
+      }
+
+      #stop-ar-button {
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 12px 24px;
+        font-size: 14px;
+        font-weight: 600;
+        color: white;
+        background-color: #ff4444;
+        border: none;
+        border-radius: 20px;
+        cursor: pointer;
+        box-shadow: 0 2px 8px rgba(255, 68, 68, 0.4);
+        transition: all 0.3s ease;
+        pointer-events: auto;
+        -webkit-appearance: none;
+        appearance: none;
+        display: none;
+      }
+
+      #stop-ar-button:hover {
+        background-color: #ff6666;
+        box-shadow: 0 4px 12px rgba(255, 68, 68, 0.6);
+        transform: translateX(-50%) translateY(-2px);
+      }
+
+      #stop-ar-button:active {
+        transform: translateX(-50%) translateY(0);
+        box-shadow: 0 2px 8px rgba(255, 68, 68, 0.4);
+      }
+
+      #calibrate-button {
+        position: fixed;
+        bottom: 80px;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 10px 20px;
+        font-size: 13px;
+        font-weight: 600;
+        color: white;
+        background-color: #ff9800;
+        border: none;
+        border-radius: 20px;
+        cursor: pointer;
+        box-shadow: 0 2px 8px rgba(255, 152, 0, 0.4);
+        transition: all 0.3s ease;
+        pointer-events: auto;
+        -webkit-appearance: none;
+        appearance: none;
+        display: none;
+      }
+
+      #calibrate-button:hover {
+        background-color: #ffa726;
+        box-shadow: 0 4px 12px rgba(255, 152, 0, 0.6);
+        transform: translateX(-50%) translateY(-2px);
+      }
+
+      #calibrate-button:active {
+        transform: translateX(-50%) translateY(0);
+        box-shadow: 0 2px 8px rgba(255, 152, 0, 0.4);
+      }
+
+      #start-navigation-button {
+        position: fixed;
+        bottom: 140px;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 10px 20px;
+        font-size: 13px;
+        font-weight: 600;
+        color: white;
+        background-color: #4CAF50;
+        border: none;
+        border-radius: 20px;
+        cursor: pointer;
+        box-shadow: 0 2px 8px rgba(76, 175, 80, 0.4);
+        transition: all 0.3s ease;
+        pointer-events: auto;
+        -webkit-appearance: none;
+        appearance: none;
+        display: none;
+      }
+
+      #start-navigation-button:hover {
+        background-color: #66BB6A;
+        box-shadow: 0 4px 12px rgba(76, 175, 80, 0.6);
+        transform: translateX(-50%) translateY(-2px);
+      }
+
+      #start-navigation-button:active {
+        transform: translateX(-50%) translateY(0);
+        box-shadow: 0 2px 8px rgba(76, 175, 80, 0.4);
+      }
+
+      #start-navigation-button.active {
+        background-color: #ff9800;
+      }
+
+      #start-navigation-button.active:hover {
+        background-color: #ffa726;
+        transform: translateX(-50%) translateY(-2px);
+      }
+
+      #calibration-status {
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(0, 0, 0, 0.8);
+        color: white;
+        padding: 12px 24px;
+        border-radius: 20px;
+        font-size: 14px;
+        font-weight: 600;
+        pointer-events: none;
+        display: none;
+        z-index: 1001;
+      }
+
+      #calibration-status.active {
+        display: block;
+        background: rgba(0, 170, 0, 0.9);
+      }
+
+      #calibration-status.inactive {
+        display: block;
+        background: rgba(255, 152, 0, 0.9);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="welcome-screen">
+      <div class="welcome-content">
+        <h1 class="app-title">AR Navigation</h1>
+        <p class="app-subtitle">Navigate indoor spaces with augmented reality</p>
+        <p class="app-instructions">Select your destination room</p>
+        <div class="room-selector">
+          <label for="destination-room">Destination:</label>
+          <select id="destination-room">
+            <option value="">Loading rooms...</option>
+          </select>
+        </div>
+        <button id="start-ar-button">Start AR</button>
+      </div>
+    </div>
+    <div id="overlay">
+      <button id="calibrate-button">Calibrate Position</button>
+      <button id="start-navigation-button">Start Navigation</button>
+      <button id="stop-ar-button">Stop AR</button>
+      <div id="calibration-status"></div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/webxr-polyfill@latest/build/webxr-polyfill.js"></script>
+    <script type="module" src="/src/navigation.js"></script>
+  </body>
+</html>

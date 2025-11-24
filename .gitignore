@@ -9,13 +9,6 @@ lerna-debug.log*
 
 node_modules
 dist
-public
-src
-navigation.html
-visualize-waypoints.html
-node-room-mapping.json
-README.md
-dist
 dist-ssr
 *.local
 
