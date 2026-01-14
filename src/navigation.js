@@ -19,6 +19,9 @@ let nearestNodeId = null; // Store nearest node ID for navigation
 let adjacencyList = {}; // Graph adjacency list
 let cubePositions = {}; // Cube positions for pathfinding
 let pathLines = []; // Store path visualization objects
+let fullNavigationPath = []; // Store full path for sliding window navigation
+let pathTubes = []; // Store tube meshes for path visualization
+let pathArrows = []; // Store arrow meshes for direction indicators
 
 init();
 
@@ -73,6 +76,32 @@ function init() {
   const calibrateButton = document.getElementById('calibrate-button');
   calibrateButton.addEventListener('click', onCalibrateClick);
 
+  // Setup destination room selector
+  const roomSelect = document.getElementById('destination-room');
+  roomSelect.addEventListener('change', async (e) => {
+    if (e.target.value) {
+      selectedDestination = e.target.value;
+      console.log('Destination room selected:', selectedDestination);
+      
+      // Reset navigation state when changing destination
+      navigationActive = false;
+      
+      // Load destination cube and graph data when room is selected
+      await loadDestinationCube();
+      await loadGraphData();
+      
+      // Show start navigation button after destination is loaded
+      const startNavButton = document.getElementById('start-navigation-button');
+      if (startNavButton && destinationNodeId) {
+        startNavButton.style.display = 'block';
+        startNavButton.textContent = 'Start Navigation';
+        startNavButton.classList.remove('active');
+      } else {
+        console.error('Could not load destination for room:', selectedDestination);
+      }
+    }
+  });
+
   // Setup Start Navigation button
   const startNavButton = document.getElementById('start-navigation-button');
   startNavButton.addEventListener('click', onStartNavigationClick);
@@ -99,15 +128,6 @@ async function onStartARClick() {
   if (xrSession) {
     // Already in AR, stop it
     xrSession.end();
-    return;
-  }
-
-  // Check if destination is selected
-  const destinationSelect = document.getElementById('destination-room');
-  selectedDestination = destinationSelect.value;
-  
-  if (!selectedDestination) {
-    alert('Please select a destination room first');
     return;
   }
 
@@ -143,9 +163,13 @@ async function onStartARClick() {
     const calibrateButton = document.getElementById('calibrate-button');
     calibrateButton.style.display = 'block';
     
-    // Show Start Navigation button
+    // Hide room selector and start navigation initially
+    const roomSelectorOverlay = document.getElementById('room-selector-overlay');
+    if (roomSelectorOverlay) {
+      roomSelectorOverlay.style.display = 'none';
+    }
     const startNavButton = document.getElementById('start-navigation-button');
-    startNavButton.style.display = 'block';
+    startNavButton.style.display = 'none';
     
     // Show Stop AR button
     const stopArButton = document.getElementById('stop-ar-button');
@@ -188,6 +212,12 @@ function onSessionEnded() {
   // Hide Stop AR button
   const stopArButton = document.getElementById('stop-ar-button');
   stopArButton.style.display = 'none';
+  
+  // Hide room selector overlay
+  const roomSelectorOverlay = document.getElementById('room-selector-overlay');
+  if (roomSelectorOverlay) {
+    roomSelectorOverlay.style.display = 'none';
+  }
   
   // Hide calibration status
   const calibrationStatus = document.getElementById('calibration-status');
@@ -270,35 +300,50 @@ async function loadCubePositions() {
 function onCalibrateClick() {
   if (!xrSession) return;
   
-  // Use a fixed origin point instead of camera position
-  // This creates a stable reference that won't drift between sessions
-  const fixedOrigin = new THREE.Vector3(0, 0, 0);
-  const fixedOrientation = new THREE.Quaternion(0, 0, 0, 1);
+  // Get the current camera (phone) position and orientation in AR space
+  // This captures where the user has placed their phone at the calibration point
+  const xrCamera = renderer.xr.getCamera();
+  const cameraPosition = new THREE.Vector3();
+  const cameraQuaternion = new THREE.Quaternion();
+  xrCamera.getWorldPosition(cameraPosition);
+  xrCamera.getWorldQuaternion(cameraQuaternion);
   
-  // Store reference anchor at world origin
+  // Store the current camera position as the reference anchor
+  // This becomes the "world origin" that all waypoints are relative to
   referenceAnchor = {
     position: {
-      x: fixedOrigin.x,
-      y: fixedOrigin.y,
-      z: fixedOrigin.z
+      x: cameraPosition.x,
+      y: cameraPosition.y,
+      z: cameraPosition.z
     },
     orientation: {
-      x: fixedOrientation.x,
-      y: fixedOrientation.y,
-      z: fixedOrientation.z,
-      w: fixedOrientation.w
+      x: cameraQuaternion.x,
+      y: cameraQuaternion.y,
+      z: cameraQuaternion.z,
+      w: cameraQuaternion.w
     }
   };
   
-  console.log('Reference position calibrated at world origin:', referenceAnchor.position);
+  console.log('Reference position calibrated at camera position:', referenceAnchor.position);
   console.log('Reference orientation:', referenceAnchor.orientation);
   
   // Update status
   updateCalibrationStatus(true);
   
-  // Load the destination cube and graph data after calibration
-  loadDestinationCube();
-  loadGraphData();
+  // Hide calibrate button after calibration
+  const calibrateButton = document.getElementById('calibrate-button');
+  if (calibrateButton) {
+    calibrateButton.style.display = 'none';
+  }
+  
+  // Show room selector overlay after calibration
+  const roomSelectorOverlay = document.getElementById('room-selector-overlay');
+  if (roomSelectorOverlay) {
+    roomSelectorOverlay.style.display = 'block';
+  }
+  
+  // Note: Don't load destination cube here - wait for room selection
+  console.log('Calibration complete. Please select a destination room.');
 }
 
 async function loadRoomMappings() {
@@ -379,7 +424,33 @@ async function loadDestinationCube() {
     // Clear existing cubes
     cubes.forEach(cube => scene.remove(cube));
     cubes = [];
-    
+
+    // Cached reference anchors and orientations (translation + rotation alignment)
+    const savedRefPos = (posData.referenceAnchor && posData.referenceAnchor.position) ? posData.referenceAnchor.position : { x: 0, y: 0, z: 0 };
+    const savedRefQuat = (posData.referenceAnchor && posData.referenceAnchor.orientation)
+      ? new THREE.Quaternion(
+          posData.referenceAnchor.orientation.x,
+          posData.referenceAnchor.orientation.y,
+          posData.referenceAnchor.orientation.z,
+          posData.referenceAnchor.orientation.w
+        )
+      : null;
+
+    const userRefPos = referenceAnchor && referenceAnchor.position ? referenceAnchor.position : { x: 0, y: 0, z: 0 };
+    const userRefQuat = (referenceAnchor && referenceAnchor.orientation)
+      ? new THREE.Quaternion(
+          referenceAnchor.orientation.x,
+          referenceAnchor.orientation.y,
+          referenceAnchor.orientation.z,
+          referenceAnchor.orientation.w
+        )
+      : null;
+
+    // Rotation delta from saved reference to current calibration (if orientations exist)
+    const deltaQuat = (savedRefQuat && userRefQuat)
+      ? userRefQuat.clone().multiply(savedRefQuat.clone().invert())
+      : null;
+
     // Load ALL cubes, but only show destination initially
     posData.cubes.forEach(cubeData => {
       const geometry = new THREE.BoxGeometry(0.2, 0.2, 0.2);
@@ -408,11 +479,23 @@ async function loadDestinationCube() {
       // Only show destination cube initially, hide others
       cube.visible = isDestination;
       
-      // Use stored world position directly (same as main.js)
+      // Translate into saved reference frame
+      const relativePos = new THREE.Vector3(
+        cubeData.worldPosition.x - savedRefPos.x,
+        cubeData.worldPosition.y - savedRefPos.y,
+        cubeData.worldPosition.z - savedRefPos.z
+      );
+
+      // Rotate into current calibration frame if orientations exist
+      if (deltaQuat) {
+        relativePos.applyQuaternion(deltaQuat);
+      }
+
+      // Translate into current user reference frame
       cube.position.set(
-        cubeData.worldPosition.x,
-        cubeData.worldPosition.y,
-        cubeData.worldPosition.z
+        relativePos.x + userRefPos.x,
+        relativePos.y + userRefPos.y,
+        relativePos.z + userRefPos.z
       );
       
       cube.matrixAutoUpdate = true;
@@ -424,12 +507,22 @@ async function loadDestinationCube() {
     
     console.log(`Loaded ${cubes.length} cubes (showing only destination: ${destinationNodeId})`);
     
-    // Store cube positions for pathfinding
+    // Store cube positions for pathfinding (aligned to user calibration)
     posData.cubes.forEach(cubeData => {
+      const relativePos = new THREE.Vector3(
+        cubeData.worldPosition.x - savedRefPos.x,
+        cubeData.worldPosition.y - savedRefPos.y,
+        cubeData.worldPosition.z - savedRefPos.z
+      );
+
+      if (deltaQuat) {
+        relativePos.applyQuaternion(deltaQuat);
+      }
+
       const pos = new THREE.Vector3(
-        cubeData.worldPosition.x,
-        cubeData.worldPosition.y,
-        cubeData.worldPosition.z
+        relativePos.x + userRefPos.x,
+        relativePos.y + userRefPos.y,
+        relativePos.z + userRefPos.z
       );
       cubePositions[cubeData.id] = pos;
     });
@@ -467,6 +560,18 @@ function onStartNavigationClick() {
     startNavButton.textContent = 'Stop Navigation';
     startNavButton.classList.add('active');
     
+    // Hide room selector during navigation
+    const roomSelectorOverlay = document.getElementById('room-selector-overlay');
+    if (roomSelectorOverlay) {
+      roomSelectorOverlay.style.display = 'none';
+    }
+    
+    // Hide calibration status during navigation
+    const calibrationStatus = document.getElementById('calibration-status');
+    if (calibrationStatus) {
+      calibrationStatus.style.display = 'none';
+    }
+    
     // Find nearest cube once
     findNearestCube();
     
@@ -474,21 +579,34 @@ function onStartNavigationClick() {
     if (nearestNodeId && destinationNodeId) {
       const result = dijkstra(nearestNodeId, destinationNodeId);
       if (result && result.path) {
-        visualizePath(result.path);
         console.log('Path found:', result.path.join(' → '), 'Distance:', result.distance.toFixed(2) + 'm');
-        
-        // Show path cubes in green, nearest in blue, destination in red
-        showPathCubes(result.path);
+        visualizePath(result.path);
       } else {
+        console.error('No path found to destination');
         alert('No path found to destination');
         navigationActive = false;
         startNavButton.textContent = 'Start Navigation';
         startNavButton.classList.remove('active');
       }
+    } else {
+      console.error('Missing nearestNodeId or destinationNodeId', { nearestNodeId, destinationNodeId });
+      alert('Cannot start navigation - missing start or destination point');
+      navigationActive = false;
+      startNavButton.textContent = 'Start Navigation';
+      startNavButton.classList.remove('active');
     }
   } else {
     startNavButton.textContent = 'Start Navigation';
     startNavButton.classList.remove('active');
+    
+    // Show room selector again when stopping navigation (for new destination selection)
+    const roomSelectorOverlay = document.getElementById('room-selector-overlay');
+    if (roomSelectorOverlay) {
+      roomSelectorOverlay.style.display = 'block';
+    }
+    
+    // Don't show calibration status - keep it hidden
+    // User can select a new destination without recalibrating
     
     // Clear path visualization
     resetPath();
@@ -606,50 +724,224 @@ function visualizePath(path) {
 
   if (!path || path.length < 2) return;
 
-  // Just store cube references for path, no visual tubes
-  for (let i = 0; i < path.length - 1; i++) {
-    const node1 = path[i];
-    const node2 = path[i + 1];
+  // Store full path for sliding window
+  fullNavigationPath = path;
 
-    // Find the actual cube meshes
-    const cube1 = cubes.find(c => `cube_${c.userData.cubeId}` === node1);
-    const cube2 = cubes.find(c => `cube_${c.userData.cubeId}` === node2);
+  // Initially show only nearest 3 waypoints
+  updateSlidingWindowPath();
+}
 
-    if (cube1 && cube2) {
-      // Store reference to cubes (no tubes)
-      pathLines.push({ cube1, cube2 });
+function createTubeBetweenPoints(point1, point2, color = 0x00ff88) {
+  const direction = new THREE.Vector3().subVectors(point2, point1);
+  const distance = direction.length();
+  
+  // Create tube (cylinder)
+  const tubeGeometry = new THREE.CylinderGeometry(0.02, 0.02, distance, 8);
+  const tubeMaterial = new THREE.MeshStandardMaterial({
+    color: color,
+    emissive: color,
+    emissiveIntensity: 0.5,
+    metalness: 0.3,
+    roughness: 0.7
+  });
+  const tube = new THREE.Mesh(tubeGeometry, tubeMaterial);
+  
+  // Position tube at midpoint
+  const midPoint = new THREE.Vector3().addVectors(point1, point2).multiplyScalar(0.5);
+  tube.position.copy(midPoint);
+  
+  // Rotate tube to align with direction
+  const axis = new THREE.Vector3(0, 1, 0);
+  tube.quaternion.setFromUnitVectors(axis, direction.normalize());
+  
+  return tube;
+}
+
+function createArrow(position, direction, color = 0x00ff88) {
+  // Create cone for arrow
+  const arrowGeometry = new THREE.ConeGeometry(0.08, 0.15, 8);
+  const arrowMaterial = new THREE.MeshStandardMaterial({
+    color: color,
+    emissive: color,
+    emissiveIntensity: 0.7,
+    metalness: 0.5,
+    roughness: 0.5
+  });
+  const arrow = new THREE.Mesh(arrowGeometry, arrowMaterial);
+  
+  arrow.position.copy(position);
+  
+  // Rotate arrow to point in direction
+  const up = new THREE.Vector3(0, 1, 0);
+  arrow.quaternion.setFromUnitVectors(up, direction.normalize());
+  
+  return arrow;
+}
+
+function clearPathVisualization() {
+  // Remove all tubes
+  pathTubes.forEach(tube => {
+    scene.remove(tube);
+    tube.geometry.dispose();
+    tube.material.dispose();
+  });
+  pathTubes = [];
+  
+  // Remove all arrows
+  pathArrows.forEach(arrow => {
+    scene.remove(arrow);
+    arrow.geometry.dispose();
+    arrow.material.dispose();
+  });
+  pathArrows = [];
+}
+
+function updateSlidingWindowPath() {
+  if (!navigationActive || fullNavigationPath.length < 2 || !xrSession) return;
+
+  // Get current camera position
+  const xrCamera = renderer.xr.getCamera();
+  const cameraPosition = new THREE.Vector3();
+  xrCamera.getWorldPosition(cameraPosition);
+
+  // Find which waypoint we've passed on the path
+  let currentPathIndex = 0;
+  let minDistance = Infinity;
+  
+  fullNavigationPath.forEach((nodeId, index) => {
+    const cube = cubes.find(c => `cube_${c.userData.cubeId}` === nodeId);
+    if (cube) {
+      const cubeWorldPos = new THREE.Vector3();
+      cube.getWorldPosition(cubeWorldPos);
+      const distance = cameraPosition.distanceTo(cubeWorldPos);
+      
+      if (distance < minDistance) {
+        minDistance = distance;
+        currentPathIndex = index;
+      }
+    }
+  });
+
+  // Show the next 3 waypoints ahead on the path (not including ones we've passed)
+  const waypointsToShow = [];
+  for (let i = currentPathIndex; i < Math.min(currentPathIndex + 3, fullNavigationPath.length - 1); i++) {
+    waypointsToShow.push(fullNavigationPath[i]);
+  }
+
+  // Check if we're close to the destination (last waypoint)
+  const destinationNodeId = fullNavigationPath[fullNavigationPath.length - 1];
+  const destinationCube = cubes.find(c => `cube_${c.userData.cubeId}` === destinationNodeId);
+  let showDestination = false;
+  
+  if (destinationCube) {
+    const destWorldPos = new THREE.Vector3();
+    destinationCube.getWorldPosition(destWorldPos);
+    const distToDestination = cameraPosition.distanceTo(destWorldPos);
+    
+    // Show destination when within 2 meters or it's one of the next 3 waypoints
+    showDestination = distToDestination < 2.0 || waypointsToShow.includes(destinationNodeId);
+  }
+
+  // Clear previous tubes and arrows
+  clearPathVisualization();
+  
+  // Draw tubes and arrows between visible waypoints
+  for (let i = 0; i < waypointsToShow.length; i++) {
+    const nodeId = waypointsToShow[i];
+    const cube = cubes.find(c => `cube_${c.userData.cubeId}` === nodeId);
+    
+    if (!cube) continue;
+    
+    const cubePos = new THREE.Vector3();
+    cube.getWorldPosition(cubePos);
+    
+    // Draw tube to next waypoint
+    if (i < waypointsToShow.length - 1) {
+      const nextNodeId = waypointsToShow[i + 1];
+      const nextCube = cubes.find(c => `cube_${c.userData.cubeId}` === nextNodeId);
+      
+      if (nextCube) {
+        const nextCubePos = new THREE.Vector3();
+        nextCube.getWorldPosition(nextCubePos);
+        
+        // Create tube at floor level
+        const floorPoint1 = cubePos.clone();
+        floorPoint1.y = cubePos.y - 0.05; // Slightly below cube center
+        
+        const floorPoint2 = nextCubePos.clone();
+        floorPoint2.y = nextCubePos.y - 0.05;
+        
+        // Calculate midpoint for arrow placement
+        const midPoint = new THREE.Vector3().addVectors(floorPoint1, floorPoint2).multiplyScalar(0.5);
+        const direction = new THREE.Vector3().subVectors(floorPoint2, floorPoint1);
+        
+        // Draw tube only from start to midpoint (stops at arrow)
+        const tube = createTubeBetweenPoints(floorPoint1, midPoint, 0x00ff88);
+        scene.add(tube);
+        pathTubes.push(tube);
+        
+        // Add arrow at midpoint pointing toward next waypoint
+        const arrow = createArrow(midPoint, direction, 0x00ff88);
+        scene.add(arrow);
+        pathArrows.push(arrow);
+      }
     }
   }
+  
+  // If destination is visible and close, draw red tube to it
+  if (showDestination && waypointsToShow.length > 0) {
+    const lastVisibleNode = waypointsToShow[waypointsToShow.length - 1];
+    const destinationNodeId = fullNavigationPath[fullNavigationPath.length - 1];
+    
+    if (lastVisibleNode !== destinationNodeId) {
+      const lastCube = cubes.find(c => `cube_${c.userData.cubeId}` === lastVisibleNode);
+      const destCube = cubes.find(c => `cube_${c.userData.cubeId}` === destinationNodeId);
+      
+      if (lastCube && destCube) {
+        const lastPos = new THREE.Vector3();
+        lastCube.getWorldPosition(lastPos);
+        const destPos = new THREE.Vector3();
+        destCube.getWorldPosition(destPos);
+        
+        const floorPoint1 = lastPos.clone();
+        floorPoint1.y = lastPos.y - 0.05;
+        const floorPoint2 = destPos.clone();
+        floorPoint2.y = destPos.y - 0.05;
+        
+        // Calculate midpoint for arrow
+        const midPoint = new THREE.Vector3().addVectors(floorPoint1, floorPoint2).multiplyScalar(0.5);
+        const direction = new THREE.Vector3().subVectors(floorPoint2, floorPoint1);
+        
+        // Draw red tube only to midpoint (stops at arrow)
+        const tube = createTubeBetweenPoints(floorPoint1, midPoint, 0xff0000);
+        scene.add(tube);
+        pathTubes.push(tube);
+        
+        // Add red arrow
+        const arrow = createArrow(midPoint, direction, 0xff0000);
+        scene.add(arrow);
+        pathArrows.push(arrow);
+      }
+    }
+  }
+  
+  // Show waypoints
+  showPathCubes(waypointsToShow, showDestination);
 }
 
 function resetPath() {
-  // Just clear the array, no tubes to remove
+  // Clear path arrays
   pathLines = [];
+  fullNavigationPath = [];
+  
+  // Clear visual tubes and arrows
+  clearPathVisualization();
 }
 
-function showPathCubes(path) {
+function showPathCubes(visibleNodes, showDestination) {
+  // Hide all cubes in navigation mode - only show tubes and arrows
   cubes.forEach(cube => {
-    const cubeId = `cube_${cube.userData.cubeId}`;
-    
-    if (cubeId === nearestNodeId) {
-      // Nearest cube - blue
-      cube.visible = true;
-      cube.material.color.setHex(0x0000ff);
-      cube.material.emissive.setHex(0x000066);
-    } else if (cube.userData.isDestination) {
-      // Destination - red
-      cube.visible = true;
-      cube.material.color.setHex(0xff0000);
-      cube.material.emissive.setHex(0xff0000);
-    } else if (path.includes(cubeId)) {
-      // Path cubes - green
-      cube.visible = true;
-      cube.material.color.setHex(0x00ff88);
-      cube.material.emissive.setHex(0x004400);
-    } else {
-      // Hide others
-      cube.visible = false;
-    }
+    cube.visible = false;
   });
 }
 
@@ -676,6 +968,11 @@ function render() {
     cube.rotation.x += 0.01;
     cube.rotation.y += 0.01;
   });
+
+  // Update sliding window for navigation (only show nearest 3 waypoints)
+  if (navigationActive && fullNavigationPath.length > 0) {
+    updateSlidingWindowPath();
+  }
 
   renderer.render(scene, camera);
 }

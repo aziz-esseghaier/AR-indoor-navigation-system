@@ -398,29 +398,45 @@ async function removeCubeFromServer(nodeId) {
 
 function onCalibrateClick() {
   if (!xrSession) return;
-  
-  // Use a fixed origin point instead of camera position
-  // This creates a stable reference that won't drift between sessions
-  const fixedOrigin = new THREE.Vector3(0, 0, 0);
-  const fixedOrientation = new THREE.Quaternion(0, 0, 0, 1);
-  
-  // Store reference anchor at world origin
+
+  // Capture the phone's current position and orientation as the reference anchor
+  const xrCamera = renderer.xr.getCamera();
+  const cameraPosition = new THREE.Vector3();
+  const cameraQuaternion = new THREE.Quaternion();
+  xrCamera.getWorldPosition(cameraPosition);
+  xrCamera.getWorldQuaternion(cameraQuaternion);
+
   referenceAnchor = {
     position: {
-      x: fixedOrigin.x,
-      y: fixedOrigin.y,
-      z: fixedOrigin.z
+      x: cameraPosition.x,
+      y: cameraPosition.y,
+      z: cameraPosition.z
     },
     orientation: {
-      x: fixedOrientation.x,
-      y: fixedOrientation.y,
-      z: fixedOrientation.z,
-      w: fixedOrientation.w
+      x: cameraQuaternion.x,
+      y: cameraQuaternion.y,
+      z: cameraQuaternion.z,
+      w: cameraQuaternion.w
     }
   };
+
+  console.log('✅ Calibration captured at phone position:', referenceAnchor.position);
+  console.log('✅ Phone orientation:', referenceAnchor.orientation);
   
-  console.log('Reference position calibrated at world origin:', referenceAnchor.position);
-  console.log('Reference orientation:', referenceAnchor.orientation);
+  // Add visual marker at calibration point for reference
+  if (!originMarker) {
+    const markerGeometry = new THREE.SphereGeometry(0.05, 16, 16);
+    const markerMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+    originMarker = new THREE.Mesh(markerGeometry, markerMaterial);
+    scene.add(originMarker);
+    
+    // Add axis helpers for orientation reference
+    const axesHelper = new THREE.AxesHelper(0.5);
+    scene.add(axesHelper);
+  }
+  
+  // Update marker to current camera position
+  originMarker.position.copy(cameraPosition);
   
   // Update status
   updateCalibrationStatus(true);
@@ -527,7 +543,33 @@ async function loadCubePositions() {
     });
     cubes = [];
     
-    // Recreate cubes at their saved world positions
+    // Cached reference anchors and orientations (for both translation + rotation alignment)
+    const savedRefPos = (data.referenceAnchor && data.referenceAnchor.position) ? data.referenceAnchor.position : { x: 0, y: 0, z: 0 };
+    const savedRefQuat = (data.referenceAnchor && data.referenceAnchor.orientation)
+      ? new THREE.Quaternion(
+          data.referenceAnchor.orientation.x,
+          data.referenceAnchor.orientation.y,
+          data.referenceAnchor.orientation.z,
+          data.referenceAnchor.orientation.w
+        )
+      : null;
+
+    const userRefPos = referenceAnchor && referenceAnchor.position ? referenceAnchor.position : { x: 0, y: 0, z: 0 };
+    const userRefQuat = (referenceAnchor && referenceAnchor.orientation)
+      ? new THREE.Quaternion(
+          referenceAnchor.orientation.x,
+          referenceAnchor.orientation.y,
+          referenceAnchor.orientation.z,
+          referenceAnchor.orientation.w
+        )
+      : null;
+
+    // Rotation delta from saved reference to current calibration (if orientations exist)
+    const deltaQuat = (savedRefQuat && userRefQuat)
+      ? userRefQuat.clone().multiply(savedRefQuat.clone().invert())
+      : null;
+
+    // Recreate cubes aligned to current calibration (translation + optional rotation)
     data.cubes.forEach(cubeData => {
       const geometry = new THREE.BoxGeometry(0.2, 0.2, 0.2);
       const material = new THREE.MeshStandardMaterial({ 
@@ -545,11 +587,23 @@ async function loadCubePositions() {
         cube.userData.cubeId = parseInt(cubeIdMatch[1]);
       }
       
-      // Use stored world position directly (since we're now using world origin as reference)
+      // Translate to saved reference frame
+      const relativePos = new THREE.Vector3(
+        cubeData.worldPosition.x - savedRefPos.x,
+        cubeData.worldPosition.y - savedRefPos.y,
+        cubeData.worldPosition.z - savedRefPos.z
+      );
+
+      // Rotate from saved reference orientation into user calibration orientation
+      if (deltaQuat) {
+        relativePos.applyQuaternion(deltaQuat);
+      }
+
+      // Translate into current user reference frame
       cube.position.set(
-        cubeData.worldPosition.x,
-        cubeData.worldPosition.y,
-        cubeData.worldPosition.z
+        relativePos.x + userRefPos.x,
+        relativePos.y + userRefPos.y,
+        relativePos.z + userRefPos.z
       );
       
       // Set rotation from stored data

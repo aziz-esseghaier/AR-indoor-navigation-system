@@ -1,6 +1,16 @@
 import { defineConfig } from 'vite'
+import { resolve } from 'path'
 
 export default defineConfig({
+  build: {
+    rollupOptions: {
+      input: {
+        main: resolve(__dirname, 'index.html'),
+        navigation: resolve(__dirname, 'navigation.html'),
+        visualize: resolve(__dirname, 'visualize-waypoints.html')
+      }
+    }
+  },
   server: {
     host: true,
     allowedHosts: [

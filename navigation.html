@@ -84,6 +84,19 @@
         text-align: center;
       }
 
+      #room-selector-overlay {
+        position: absolute;
+        top: 80px;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: rgba(0, 0, 0, 0.8);
+        padding: 20px;
+        border-radius: 15px;
+        z-index: 2000;
+        pointer-events: auto;
+        min-width: 320px;
+      }
+
       .room-selector label {
         display: block;
         font-size: 14px;
@@ -299,19 +312,19 @@
       <div class="welcome-content">
         <h1 class="app-title">AR Navigation</h1>
         <p class="app-subtitle">Navigate indoor spaces with augmented reality</p>
-        <p class="app-instructions">Select your destination room</p>
-        <div class="room-selector">
-          <label for="destination-room">Destination:</label>
-          <select id="destination-room">
-            <option value="">Loading rooms...</option>
-          </select>
-        </div>
+        <p class="app-instructions">Start AR and calibrate to begin</p>
         <button id="start-ar-button">Start AR</button>
       </div>
     </div>
     <div id="overlay">
       <button id="calibrate-button">Calibrate Position</button>
-      <button id="start-navigation-button">Start Navigation</button>
+      <div class="room-selector" id="room-selector-overlay" style="display: none;">
+        <label for="destination-room">Select Destination:</label>
+        <select id="destination-room">
+          <option value="">Loading rooms...</option>
+        </select>
+      </div>
+      <button id="start-navigation-button" style="display: none;">Start Navigation</button>
       <button id="stop-ar-button">Stop AR</button>
       <div id="calibration-status"></div>
     </div>
