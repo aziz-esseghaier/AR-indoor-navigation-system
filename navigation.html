@@ -35,6 +35,7 @@
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         z-index: 998;
         transition: opacity 0.5s ease, visibility 0.5s ease;
+        overflow: hidden;
       }
 
       #welcome-screen.hidden {
@@ -43,11 +44,36 @@
         pointer-events: none;
       }
 
+      #welcome-video {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        min-width: 100%;
+        min-height: 100%;
+        width: auto;
+        height: auto;
+        transform: translate(-50%, -50%);
+        object-fit: cover;
+        z-index: -1;
+      }
+
+      .video-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.4);
+        z-index: 0;
+      }
+
       .welcome-content {
         text-align: center;
         color: white;
         padding: 40px 20px;
         max-width: 500px;
+        position: relative;
+        z-index: 1;
       }
 
       .app-title {
@@ -309,9 +335,13 @@
   </head>
   <body>
     <div id="welcome-screen">
+      <video id="welcome-video" autoplay muted loop playsinline>
+        <source src="/supcom.mp4" type="video/mp4">
+      </video>
+      <div class="video-overlay"></div>
       <div class="welcome-content">
-        <h1 class="app-title">AR Navigation</h1>
-        <p class="app-subtitle">Navigate indoor spaces with augmented reality</p>
+        <h1 class="app-title">Welcome to Sup'Com</h1>
+        <p class="app-subtitle">AR Indoor Navigation</p>
         <p class="app-instructions">Start AR and calibrate to begin</p>
         <button id="start-ar-button">Start AR</button>
       </div>
