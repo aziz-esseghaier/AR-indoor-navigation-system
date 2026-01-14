@@ -6,8 +6,8 @@ export default defineConfig({
     rollupOptions: {
       input: {
         main: resolve(__dirname, 'index.html'),
-        navigation: resolve(__dirname, 'navigation.html'),
-        visualize: resolve(__dirname, 'visualize-waypoints.html')
+        navigation: resolve(__dirname, 'navigation.html')
+        // visualize-waypoints.html removed from production build
       }
     }
   },
